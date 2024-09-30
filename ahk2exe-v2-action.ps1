@@ -74,13 +74,14 @@ function Invoke-Ahk2Exe {
     Show-Message "Build $out" "Converting $ahk_input to $out..." "Blue" "DarkGreen"
 
     $ahk2exe_path = Join-Path $path_assets 'Ahk2Exe/Ahk2Exe.exe'
-    $ahk2exe_args = "/silent verbose /base `"$ahk`" /in `"$in`""
+    $ahk2exe_args = "/silent verbose /in `"$in`""
 
     Switch ($target) {
-        'x64' { $ahk = Join-Path $path_assets 'AutoHotkey/AutoHotkey64.exe' }
-        'x86' { $ahk = Join-Path $path_assets 'AutoHotkey/AutoHotkey32.exe' }
-        Default { Throw "Unsupported Architecture: '$arch'. Valid Options: x64, x86" }
+        'x64' { $base = Join-Path $path_assets 'AutoHotkey/AutoHotkey64.exe' }
+        'x86' { $base = Join-Path $path_assets 'AutoHotkey/AutoHotkey32.exe' }
+        Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
     }
+    $ahk2exe_args += " /base `"$base`""
 
     Switch ($compression) {
         'none' { $ahk2exe_args += " /compress 0" }
