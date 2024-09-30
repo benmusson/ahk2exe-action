@@ -12,18 +12,18 @@ jobs:
       - name: x64 Test
         uses: ./
         with:
-          in: ./test/scripts/test.ahk2
-          out: ./output/test_x64.exe
-          icon: ./test/icons/test.ico
+          in: .\test\scripts\test.ahk2
+          out: .\output\test_x64.exe
+          icon: .\test\icons\test.ico
           compression: upx
           target: x64
 
       - name: x86 Test
         uses: ./
         with:
-          in: ./test/scripts/test.ahk2
-          out: ./output/test_x86.exe
-          icon: ./test/icons/test.ico
+          in: .\test\scripts/\est.ahk2
+          out: .\output\test_x86.exe
+          icon: .\test\icons\test.ico
           compression: upx
           target: x86
 
