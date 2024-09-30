@@ -1,19 +1,7 @@
-param (
-    [string]$in,
-    [string]$out,
-    [string]$icon,
-    [string]$target = 'x64',
-    [string]$compression = 'upx',
-    [string]$url_ahk = 'https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.18/AutoHotkey_2.0.18.zip',
-    [string]$url_ahk2exe = 'https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.02a0/Ahk2Exe1.1.37.02a0.zip',
-    [string]$url_upx = 'https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip',
-    [string]$build_assets_folder = '.\.ahk2exe-v2-action'
-)
-
 $ErrorActionPreference = "Stop"
 
-$path_assets = Join-Path $build_assets_folder 'assets'
-$path_downloads = Join-Path $build_assets_folder 'downloads'
+$path_assets = Join-Path $env:Build_Assets_Folder 'assets'
+$path_downloads = Join-Path $env:Build_Assets_Folder 'downloads'
 
 function Show-Message {
     param (
@@ -80,9 +68,13 @@ function Invoke-Ahk2Exe {
         [string]$out,
         [string]$icon,
         [string]$target = 'x64',
-        [string]$compression = 'upx'
+        [string]$compression = 'upx',
+        [string]$resourceid
     )
     Show-Message "Build $out" "Converting $ahk_input to $out..." "Blue" "DarkGreen"
+
+    $ahk2exe_path = Join-Path $path_assets 'Ahk2Exe/Ahk2Exe.exe'
+    $ahk2exe_args = "/silent verbose /base `"$ahk`" /in `"$in`""
 
     Switch ($target) {
         'x64' { $ahk = Join-Path $path_assets 'AutoHotkey/AutoHotkey64.exe' }
@@ -90,17 +82,15 @@ function Invoke-Ahk2Exe {
         Default { Throw "Unsupported Architecture: '$arch'. Valid Options: x64, x86" }
     }
 
-    $ahk2exe_path = Join-Path $path_assets 'Ahk2Exe/Ahk2Exe.exe'
-    $ahk2exe_args = "/silent verbose /base `"$ahk`" /in `"$in`""
-
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($out)) { " /out `"$out`"" }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
-
     Switch ($compression) {
         'none' { $ahk2exe_args += " /compress 0" }
         'upx'  { $ahk2exe_args += " /compress 2" } 
         Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
     }
+
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($out)) { " /out `"$out`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid  `"$resourceid`"" }
 
     $command = "Start-Process -NoNewWindow -Wait -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
 
@@ -111,14 +101,14 @@ function Invoke-Ahk2Exe {
 
 Show-Message "Build Started" "" "Magenta"
 
-Invoke-DownloadArtifacts 'AutoHotkey' "$url_ahk"
-Invoke-DownloadArtifacts 'Ahk2Exe' "$url_ahk2exe"
+Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
+Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
 
 if ("$compression" -eq "upx") {
-    Invoke-DownloadArtifacts 'UPX' "$url_upx"
+    Invoke-DownloadArtifacts 'UPX' "$Url_UPX"
     Install-UPX
 }
 
-Invoke-Ahk2Exe -In "$in" -Out "$out" -Icon "$icon" -Target "$target" -Compression "$compression"
+Invoke-Ahk2Exe -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Target "$env:Target" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
 
 Show-Message "Build Finished" "" "Magenta"

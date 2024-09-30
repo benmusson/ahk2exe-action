@@ -64,18 +64,27 @@ inputs:
       UPX download URL.
     default: 'https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip'
 
+  build-assets-folder:
+    required: false
+    description: >
+      The path used to store build assets.
+    default: '.\.ahk2exe-v2-action'
+
 
 runs:
   using: composite
   steps:
     - name: Build
       shell: powershell
-      run: |
-        ./ahk2exe-v2-action.ps1 \
-        -In "${{ inputs.in }}" \
-        -Out "${{ inputs.out }}" \
-        -Icon "${{ inputs.icon }}" \
-        -Target "${{ inputs.target }}" \
-        -Url_Ahk "${{ inputs.url-ahk }}" \
-        -Url_Ahk2Exe "${{ inputs.url-ahk2exe }}" \
-        -Url_UPX "${{ inputs.url-upx }}"
+      run: ./ahk2exe-v2-action.ps1
+      env:
+        In: "${{ inputs.in }}"
+        Out: "${{ inputs.out }}"
+        Icon: "${{ inputs.icon }}"
+        Target: "${{ inputs.target }}"
+        ResourceId: "${{ inputs.resourceid }}"
+        Compression: "${{ inputs.compression }}"
+        Url_Ahk: "${{ inputs.url-ahk }}"
+        Url_Ahk2Exe: "${{ inputs.url-ahk2exe }}"
+        Url_UPX: "${{ inputs.url-upx }}"
+        Build_Assets_Folder: "${{ inputs.build-assets-dir }}"
