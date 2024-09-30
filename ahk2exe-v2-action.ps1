@@ -102,7 +102,7 @@ function Install-AutoHotkey {
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
     $installPath = Join-Path $downloadFolder $exeName
-    if ([System.IO.File]::Exists($installPathh)) { 
+    if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $installPath
     }
@@ -213,7 +213,7 @@ function Invoke-Action {
     
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
-	
+
 	if ("$env:Compression" -eq "upx") {
 	    Install-UPX -Ahk2ExePath $ahk2exePath
 	}
