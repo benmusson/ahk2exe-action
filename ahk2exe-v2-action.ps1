@@ -136,24 +136,18 @@ function Install-UPX {
 
 function Invoke-Ahk2Exe {
     param (
-        [string]$in,
-        [string]$out,
-        [string]$icon,
-        [string]$target = 'x64',
-        [string]$compression = 'upx',
-        [string]$resourceid
+        [string]$Path,
+        [string]$In,
+        [string]$Out,
+        [string]$Icon,
+        [string]$Base,
+        [string]$Compression = 'upx',
+        [string]$ResourceId
     )
-    Show-Message "Build $out" "Converting $in to $out..." $StyleInfo $StyleAction
+    Show-Message "Build $Out" "Converting $In to $Out..." $StyleInfo $StyleAction
 
-    $ahk2exe_path = Join-Path $PathAssets 'Ahk2Exe/Ahk2Exe.exe'
-    $ahk2exe_args = "/silent verbose /in `"$in`""
-
-    Switch ($target) {
-        'x64' { $base = Join-Path $PathAssets 'AutoHotkey/AutoHotkey64.exe' }
-        'x86' { $base = Join-Path $PathAssets 'AutoHotkey/AutoHotkey32.exe' }
-        Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
-    }
-    $ahk2exe_args += " /base `"$base`""
+    $ahk2exe_args = "/silent verbose /in `"$In`""
+    $ahk2exe_args += " /base `"$Base`""
 
     Switch ($compression) {
         'none' { $ahk2exe_args += " /compress 0" }
@@ -161,22 +155,22 @@ function Invoke-Ahk2Exe {
         Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
     }
     
-    if (![string]::IsNullOrEmpty($out)) { 
-        [void](New-Item -Path $out -ItemType File -Force)
-        $ahk2exe_args += " /out `"$out`"" 
+    if (![string]::IsNullOrEmpty($Out)) { 
+        [void](New-Item -Path $Out -ItemType File -Force)
+        $ahk2exe_args += " /out `"$Out`"" 
     }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid `"$resourceid`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($Icon)) { " /icon `"$Icon`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($ResourcId)) { " /resourceid `"$ResourceId`"" }
 
-    $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
+    $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$Path`" -ArgumentList '$ahk2exe_args'"
 
-    Show-Message "Build $out" "`"$command`"" $StyleInfo $StyleCommand
+    Show-Message "Build $Out" "`"$command`"" $StyleInfo $StyleCommand
     $process = Invoke-Expression "$command"
     $process | Wait-Process -Timeout 300
     if ($process.ExitCode -ne 0) {
         Throw "Exception occurred during build."
     } else {
-        Show-Message "Build $out" "Build completed" $StyleInfo $StyleStatus
+        Show-Message "Build $Out" "Build completed" $StyleInfo $StyleStatus
     }
 }
 
@@ -206,20 +200,40 @@ function Install-AutoHotkey {
     return $exePath
 }
 
+function Install-Ahk2Exe {
+    Show-Message "Install Ahk2Exe" "Installing..." $StyleInfo $StyleAction
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
+
+    foreach ($zip in Get-ChildItem -Path $downloadFolder -Filter *.zip -Recurse) {
+        Show-Message "Install Ahk2Exe" "Extracting..." $StyleInfo $StyleAction
+        Show-Message "Install Ahk2Exe" "Source: $zip" $StyleInfo $StyleCommand
+        Show-Message "Install Ahk2Exe" "Destination: $downloadFolder" $StyleInfo $StyleCommand
+        [void](New-Item -ItemType Directory -Path $PathAssets -Force)
+        Expand-Archive -Force $zip -DestinationPath $downloadFolder
+        Show-Message "Install Ahk2Exe" "Extraction completed" $StyleInfo $StyleStatus
+    }
+
+    $exeName = 'Ahk2Exe.exe'
+
+    $exePath = Join-Path $downloadFolder $exeName
+    if (![System.IO.File]::Exists($exePath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
+    Show-Message "Install Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
+    Show-Message "Install Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
+    return $exePath
+}
+
 function Invoke-Action {
 	Show-Message "Action Started" "" $StyleStatus
     
-    Install-AutoHotkey
-
-	Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
-	Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
+    $ahkPath = Install-AutoHotkey
+    $ahk2exePath = Install-Ahk2Exe
 	
-	if ("$env:Compression" -eq "upx") {
-	    Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
-	    Install-UPX
-	}
+	# if ("$env:Compression" -eq "upx") {
+	#     Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
+	#     Install-UPX
+	# }
 	
-	Invoke-Ahk2Exe -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Target "$env:Target" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
+	Invoke-Ahk2Exe -Path "$ahk2exePath" -Base "$ahkPath" -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
 	Show-Message "Action Finished" "" $StyleStatus
 }
 	
