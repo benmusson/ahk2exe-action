@@ -96,12 +96,13 @@ function Get-GitHubReleaseAssets {
     foreach ($asset in $filteredAssets) {
         $downloadUrl = $asset.browser_download_url
         $fileName = $asset.name
+        $downloadDestination = Join-Path $downloadFolder $fileName
 
         Show-Message "Get-Assets $displayPath - $fileName" "Downloading..." $StyleInfo $StyleAction
         Show-Message "Get-Assets $displayPath - $fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
-        Show-Message "Get-Assets $displayPath - $fileName" "Destination: $downloadFolder" $StyleInfo $StyleCommand
+        Show-Message "Get-Assets $displayPath - $fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
         [void](New-Item -ItemType Directory -Path $downloadFolder -Force)
-        [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadFolder)
+        [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadDestination)
         Show-Message "Get-Assets $displayPath - $fileName" "Download completed" $StyleInfo $StyleStatus
     }
 }
