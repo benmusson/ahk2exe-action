@@ -92,14 +92,14 @@ function Get-GitHubReleaseAssets {
     if ($filteredAssets.Count -eq 0) { Throw "No assets matching the file type '$FileTypeFilter' found." }
     Show-Message "Get-Assets $displayPath" "Found files: $filteredAssets" $StyleInfo $StyleCommand
 
-    Show-Message "Get-Assets $displayPath" "Downloading all filtered assets for..." $StyleInfo $StyleAction
+    Show-Message "Get-Assets $displayPath" "Downloading assets..." $StyleInfo $StyleAction
     foreach ($asset in $filteredAssets) {
         $downloadUrl = $asset.browser_download_url
         $fileName = $asset.name
 
         Show-Message "Get-Assets $displayPath - $fileName" "Downloading..." $StyleInfo $StyleAction
         Show-Message "Get-Assets $displayPath - $fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
-        Show-Message "Get-Assets $displayPath - $fileName" "Destination: $filePath" $StyleInfo $StyleCommand
+        Show-Message "Get-Assets $displayPath - $fileName" "Destination: $downloadFolder" $StyleInfo $StyleCommand
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadFolder)
         Show-Message "Get-Assets $displayPath - $fileName" "Download completed" $StyleInfo $StyleStatus
     }
