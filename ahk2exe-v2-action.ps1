@@ -10,7 +10,7 @@ function Show-Message {
         [string]$header_color = "Green",
         [string]$message_color = "White"
     )
-    Write-Host "$($PSStyle.Foreground.$header_color)::$header::$($PSStyle.Reset) " -NoNewLine
+    Write-Host "$($PSStyle.Foreground.Blue)::$header::$($PSStyle.Reset) " -NoNewLine
     Write-Host "$($PSStyle.Foreground.$message_color)$message$($PSStyle.Reset)"
 }
 
