@@ -111,7 +111,7 @@ Show-Message "Build Started" "" "Magenta"
 Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
 Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
 
-if ("$compression" -eq "upx") {
+if ("$env:Compression" -eq "upx") {
     Invoke-DownloadArtifacts 'UPX' "$Url_UPX"
     Install-UPX
 }
