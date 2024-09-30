@@ -81,8 +81,6 @@ function Get-GitHubReleaseAssets {
 
     Show-Message "Get-Assets $displayPath" "Getting release information..." $StyleInfo $StyleAction
     $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ "User-Agent" = "PowerShell" }
-    # $latestTag = $release.tag_name
-    # Show-Message "Get-Assets $displayPath" "Latest Tag: $latestTag" $StyleInfo $StyleCommand
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
@@ -109,34 +107,37 @@ function Get-GitHubReleaseAssets {
     return $downloadFolder
 }
 
-function Install-UPX {
-    $destination = Join-Path "$PathAssets" "Ahk2Exe\upx.exe"
-    if ([System.IO.File]::Exists($destination)) {
-        Show-Message "Install UPX" "UPX is already installed, skipping installation..." $StyleInfo $StyleQuiet
-        return
-    }
+function Invoke-UnzipAllInPlace {
+    param (
+        [string]$TaskName,
+        [string]$FolderPath
+    )
 
-    Show-Message "Install UPX" "Searching for UPX executable..." $StyleInfo $StyleAction
-    foreach ($exe in Get-ChildItem -Path (Join-Path $PathAssets "UPX") -Filter *.exe -Recurse)  {
-        Show-Message "Install UPX" "Found!" $StyleInfo $StyleCommand
-
-        Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
-        Show-Message "Install UPX" "Source: $exe" $StyleInfo $StyleCommand
-        Show-Message "Install UPX" "Destination: $destination" $StyleInfo $StyleCommand
-        Move-Item -Path $exe.FullName -Destination $destination -Force
-        break
-    }
-
-    if ([System.IO.File]::Exists($destination)) {
-        Show-Message "Install UPX" "Installation successful" $StyleInfo $StyleStatus
-    } else {
-        throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed."
+    foreach ($zip in Get-ChildItem -Path $FolderPath -Filter *.zip -Recurse) {
+        Show-Message "$TaskName" "Extracting..." $StyleInfo $StyleAction
+        Show-Message "$TaskName" "Source: $zip" $StyleInfo $StyleCommand
+        Show-Message "$TaskName" "Destination: $FolderPath" $StyleInfo $StyleCommand
+        [void](New-Item -ItemType Directory -Path $PathAssets -Force)
+        Expand-Archive -Force $zip -DestinationPath $FolderPath
+        Show-Message "$TaskName" "Extraction completed" $StyleInfo $StyleStatus
     }
 }
 
 function Install-AutoHotkey {
     Show-Message "Install Autohotkey" "Installing..." $StyleInfo $StyleAction
+
+    switch ($env:Target) {
+        'x64' { $exeName = 'AutoHotkey64.exe' }
+        'x86' { $exeName = 'AutoHotkey32.exe' }
+        Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
+    }
+
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
+    $exePath = Join-Path $downloadFolder $exeName
+    if ([System.IO.File]::Exists($exePath)) { 
+        Show-Message "Install Autohotkey" "Autohotkey is already installed, skipping re-installed..." $StyleInfo $StyleStatus
+        return $exePath
+     }
 
     foreach ($zip in Get-ChildItem -Path $downloadFolder -Filter *.zip -Recurse) {
         Show-Message "Install Autohotkey" "Extracting..." $StyleInfo $StyleAction
@@ -147,13 +148,6 @@ function Install-AutoHotkey {
         Show-Message "Install Autohotkey" "Extraction completed" $StyleInfo $StyleStatus
     }
 
-    switch ($env:Target) {
-        'x64' { $exeName = 'AutoHotkey64.exe' }
-        'x86' { $exeName = 'AutoHotkey32.exe' }
-        Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
-    }
-
-    $exePath = Join-Path $downloadFolder $exeName
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
     Show-Message "Install Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
     Show-Message "Install Autohotkey" "Installation completed" $StyleInfo $StyleStatus
@@ -162,24 +156,56 @@ function Install-AutoHotkey {
 
 function Install-Ahk2Exe {
     Show-Message "Install Ahk2Exe" "Installing..." $StyleInfo $StyleAction
-    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
-
-    foreach ($zip in Get-ChildItem -Path $downloadFolder -Filter *.zip -Recurse) {
-        Show-Message "Install Ahk2Exe" "Extracting..." $StyleInfo $StyleAction
-        Show-Message "Install Ahk2Exe" "Source: $zip" $StyleInfo $StyleCommand
-        Show-Message "Install Ahk2Exe" "Destination: $downloadFolder" $StyleInfo $StyleCommand
-        [void](New-Item -ItemType Directory -Path $PathAssets -Force)
-        Expand-Archive -Force $zip -DestinationPath $downloadFolder
-        Show-Message "Install Ahk2Exe" "Extraction completed" $StyleInfo $StyleStatus
-    }
 
     $exeName = 'Ahk2Exe.exe'
 
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
     $exePath = Join-Path $downloadFolder $exeName
+    if ([System.IO.File]::Exists($exePath)) { 
+        Show-Message "Install Ahk2Exe" "Ahk2Exe is already installed, skipping re-installation..." $StyleInfo $StyleStatus
+        return $exePath
+    }
+
+    Invoke-UnzipAllInPlace -TaskName "Install Ahk2Exe" -FolderPath $downloadFolder
+
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
     Show-Message "Install Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
     Show-Message "Install Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
     return $exePath
+}
+
+function Install-UPX {
+    param (
+        [string]$Ahk2ExePath
+    )
+
+    $exeName = 'upx.exe'
+
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*.zip"
+    $exePath = Join-Path $Ahk2ExePath $exeName
+    if ([System.IO.File]::Exists($exePath)) {
+        Show-Message "Install UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
+        return
+    }
+
+    Invoke-UnzipAllInPlace -TaskName "Install UPX" -FolderPath $downloadFolder
+
+    Show-Message "Install UPX" "Searching for UPX executable..." $StyleInfo $StyleAction
+    foreach ($exe in Get-ChildItem -Path (Join-Path $PathAssets "UPX") -Filter *.exe -Recurse)  {
+        Show-Message "Install UPX" "Found!" $StyleInfo $StyleCommand
+
+        Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
+        Show-Message "Install UPX" "Source: $exe" $StyleInfo $StyleCommand
+        Show-Message "Install UPX" "Destination: $exePath" $StyleInfo $StyleCommand
+        Move-Item -Path $exe.FullName -Destination $exePath -Force
+        break
+    }
+
+    if ([System.IO.File]::Exists($exePath)) {
+        Show-Message "Install UPX" "Installation successful" $StyleInfo $StyleStatus
+    } else {
+        throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed."
+    }
 }
 
 function Invoke-Ahk2Exe {
@@ -228,10 +254,9 @@ function Invoke-Action {
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
 	
-	# if ("$env:Compression" -eq "upx") {
-	#     Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
-	#     Install-UPX
-	# }
+	if ("$env:Compression" -eq "upx") {
+	    Install-UPX -Ahk2ExePath $ahk2exePath
+	}
 	
 	Invoke-Ahk2Exe -Path "$ahk2exePath" -Base "$ahkPath" -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
 	Show-Message "Action Finished" "" $StyleStatus
