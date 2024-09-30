@@ -114,7 +114,7 @@ function Invoke-Ahk2Exe {
 
     Show-Message "Build $out" "`"$command`"" $style_info $style_command
     $process = Invoke-Expression "$command"
-    $process | Wait-Process -Timeout 30
+    $process | Wait-Process -Timeout 300
     if ($process.ExitCode -ne 0) {
         Throw "Exception occurred during build."
     } else {
