@@ -63,7 +63,7 @@ function Install-UPX {
         Show-Message "Install UPX" "Found!" $style_info $style_command
 
         Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $style_info $style_action
-        Show-Message "Install UPX" "Source: $ece" $style_info $style_command
+        Show-Message "Install UPX" "Source: $exe" $style_info $style_command
         Show-Message "Install UPX" "Destination: $destination" $style_info $style_command
         Move-Item -Path $exe.FullName -Destination $destination -Force
         break
@@ -122,16 +122,18 @@ function Invoke-Ahk2Exe {
     }
 }
 
-Show-Message "Build Started" "" $style_status
-
-Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
-Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
-
-if ("$env:Compression" -eq "upx") {
-    Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
-    Install-UPX
+function Invoke-Action {
+	Show-Message "Action Started" "" $style_status
+	Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
+	Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
+	
+	if ("$env:Compression" -eq "upx") {
+	    Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
+	    Install-UPX
+	}
+	
+	Invoke-Ahk2Exe -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Target "$env:Target" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
+	Show-Message "Action Finished" "" $style_status
 }
-
-Invoke-Ahk2Exe -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Target "$env:Target" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
-
-Show-Message "Build Finished" "" $style_status
+	
+Invoke-Action
