@@ -93,14 +93,13 @@ function Invoke-UnzipAllInPlace {
 
 function Install-AutoHotkey {
     Show-Message "Install-Autohotkey" "Installing..." $StyleInfo $StyleAction
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
 
     switch ($env:Target) {
-        'x64' { $exeName = 'AutoHotkey64.exe' }
-        'x86' { $exeName = 'AutoHotkey32.exe' }
+        'x64' { $exeName = 'AutoHotkey(U)?64\.exe' }
+        'x86' { $exeName = 'AutoHotkey(U)?32\.exe' }
         Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
     }
-
-    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
 
     $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
@@ -119,10 +118,9 @@ function Install-AutoHotkey {
 
 function Install-Ahk2Exe {
     Show-Message "Install-Ahk2Exe" "Installing..." $StyleInfo $StyleAction
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
 
     $exeName = 'Ahk2Exe.exe'
-
-    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
 
     $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
@@ -145,11 +143,11 @@ function Install-UPX {
     )
 
     Show-Message "Install-UPX" "Installing..." $StyleInfo $StyleAction
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
 
     $exeName = 'upx.exe'
     $ahk2exeFolder = Split-Path -Path $Ahk2ExePath -Parent 
 
-    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
     $installPath = Join-Path $ahk2exeFolder $exeName
     if ([System.IO.File]::Exists($installPath)) {
         Show-Message "Install-UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
