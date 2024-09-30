@@ -13,10 +13,10 @@ function Show-Message {
     param (
         [string]$header,
         [string]$message,
-        [string]$header_color = "$($PSStyle.Foreground.Green)",
-        [string]$message_color = "$($PSStyle.Foreground.White)"
+        [string]$header_style = $PSStyle.Foreground.Green,
+        [string]$message_style = $PSStyle.Foreground.White
     )
-    Write-Host "$header_style::$header::$($PSStyle.Reset) " -NoNewLine
+    Write-Host "header_style::$header::$($PSStyle.Reset) " -NoNewLine
     Write-Host "$message_style$message$($PSStyle.Reset)"
 }
 
