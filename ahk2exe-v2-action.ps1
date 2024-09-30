@@ -35,6 +35,7 @@ function Invoke-DownloadArtifacts {
             return
         }
     }
+
     Show-Message "Download $name" "Downloading..." $style_info $style_action
     Show-Message "Download $name" "Source: $url" $style_info $style_command
     Show-Message "Download $name" "Destination: $path_zip" $style_info $style_command
