@@ -43,7 +43,7 @@ function Invoke-DownloadArtifacts {
     [void](New-Object System.Net.WebClient).DownloadFile($url, $path_zip)
     Show-Message "Download $name" "Download completed" $style_info $style_status
 
-		Show-Message "Download $name" "Extracting..." $style_info $style_action
+    Show-Message "Download $name" "Extracting..." $style_info $style_action
     Show-Message "Download $name" "Source: $path_zip" $style_info $style_command
     Show-Message "Download $name" "Destination: $path_final" $style_info $style_command
     [void](New-Item -ItemType Directory -Path $path_assets -Force)
