@@ -3,11 +3,11 @@ $ErrorActionPreference = "Stop"
 $path_assets = Join-Path $env:Build_Assets_Folder 'assets'
 $path_downloads = Join-Path $env:Build_Assets_Folder 'downloads'
 
-$style_info = "$($PSStyle.Foreground.Blue)"
-$style_action = "$($PSStyle.Foreground.Green)"
-$style_status = "$($PSStyle.Foreground.Magenta)"
-$style_command = "$($PSStyle.Foreground.DarkYellow)"
-$style_quiet = "$($PSStyle.Foreground.DarkGrag)"
+$style_info = $PSStyle.Foreground.Blue
+$style_action = $PSStyle.Foreground.Green
+$style_status = $PSStyle.Foreground.Magenta
+$style_command = $PSStyle.Foreground.DarkYellow)
+$style_quiet = $PSStyle.Foreground.DarkGray
 
 function Show-Message {
     param (
