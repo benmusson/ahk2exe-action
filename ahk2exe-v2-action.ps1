@@ -181,7 +181,7 @@ function Install-UPX {
 
     $exeName = 'upx.exe'
 
-    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*.zip"
+    $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
     $exePath = Join-Path $Ahk2ExePath $exeName
     if ([System.IO.File]::Exists($exePath)) {
         Show-Message "Install UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
@@ -197,7 +197,7 @@ function Install-UPX {
         Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
         Show-Message "Install UPX" "Source: $exe" $StyleInfo $StyleCommand
         Show-Message "Install UPX" "Destination: $exePath" $StyleInfo $StyleCommand
-        Move-Item -Path $exe.FullName -Destination $exePath -Force
+        Move-Item -Path $exe -Destination $exePath -Force
         break
     }
 
