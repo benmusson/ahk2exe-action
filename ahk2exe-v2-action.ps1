@@ -106,7 +106,6 @@ function Invoke-Ahk2Exe {
     } else {
         Show-Message "Build $out" "Build completed" "Blue" "Magenta"
     }
-    
 }
 
 Show-Message "Build Started" "" "Magenta"
