@@ -1,0 +1,42 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: x64 Test
+        uses: ./
+        with:
+          in: test/scripts/test.ahk2
+          out: output/test_x64.exe
+          icon: test/icons/test.ico
+          compression: upx
+          target: x64
+
+      - name: x86 Test
+        uses: ./
+        with:
+          in: test/scripts/test.ahk2
+          out: output/test_x86.exe
+          icon: test/icons/test.ico
+          compression: upx
+          target: x86
+
+      - name: No Compression Test
+        uses: ./
+        with:
+          in: test/scripts/test.ahk2
+          out: output/text_x64_uncompressed.exe
+          icon: test/icons/test.ico
+          compression: none
+
+
+      - name: List output directories
+        shell: pwsh
+        run: |
+          ls output

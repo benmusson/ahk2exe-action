@@ -1,0 +1,81 @@
+name: 'Ahk2Exe'
+description: 'Compile AutoHotkey v2 scripts using Ahk2Exe.'
+author: 'benmusson'
+branding:
+  color: 'blue'
+  icon: 'command'
+
+inputs:
+  in:
+    required: true
+    description: >
+      The path and name of the script to compile.
+
+  out:
+    required: false
+    description: >
+      The path\name of the output .exe to be created. 
+      Default is the directory\base_name of the input file plus extension of .exe, 
+      or any relevant compiler directive in the script.
+
+  icon:
+    required: false
+    description: >
+      The icon file to be used. 
+      Default is the last icon saved in the GUI interface, 
+      or any SetMainIcon compiler directive in the script.
+
+  target:
+    required: false
+    description: >
+      Target architecture. Valid options: x86, x64. Defaults to x64.
+    default: "x64"
+
+  resourceid:
+    required: false
+    description: >
+      Assigns a non-standard resource ID to be used for the main script for
+      compilations which use an .exe base file (see Embedded Scripts). 
+      Numeric resource IDs should consist of a hash sign (#) followed by a 
+      decimal number. 
+      Default is #1, or any ResourceID compiler directive in the script.
+
+  compression:
+    required: false
+    description: >
+      Specifies which compression method to use. Valid options: none, upx. Defaults to upx.
+    default: 'upx'
+
+  url-ahk:
+    required: false
+    description: >
+      AutoHotkey download URL.
+    default: 'https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.18/AutoHotkey_2.0.18.zip'
+
+  url-ahk2exe:
+    required: false
+    description: >
+      Ahk2Exe download URL.
+    default: 'https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.02a0/Ahk2Exe1.1.37.02a0.zip'
+
+  url-upx:
+    required: false
+    description: >
+      UPX download URL.
+    default: 'https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip'
+
+
+runs:
+  using: composite
+  steps:
+    - name: Build
+      shell: powershell
+      run: |
+        ./ahk2exe-v2-action.ps1 \
+        -In "${{ inputs.in }}" \
+        -Out "${{ inputs.out }}" \
+        -Icon "${{ inputs.icon }}" \
+        -Target "${{ inputs.target }}" \
+        -Url_Ahk "${{ inputs.url-ahk }}" \
+        -Url_Ahk2Exe "${{ inputs.url-ahk2exe }}" \
+        -Url_UPX "${{ inputs.url-upx }}"
