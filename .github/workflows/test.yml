@@ -12,7 +12,6 @@ jobs:
       - name: Test x64 Target
         uses: ./
         continue-on-error: true
-        shell: pwsh
         with:
           in: .\test\scripts\test.ahk2
           out: .\output\test_x64.exe
@@ -23,7 +22,6 @@ jobs:
       - name: Test x86 Target
         uses: ./
         continue-on-error: true
-        shell: powershell
         with:
           in: .\test\scripts\test.ahk2
           out: .\output\test_x86.exe
