@@ -94,7 +94,7 @@ function Invoke-Ahk2Exe {
         $ahk2exe_args += " /out `"$out`"" 
     }
     $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid  `"$resourceid`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid `"$resourceid`"" }
 
     $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
 
