@@ -115,7 +115,7 @@ Invoke-DownloadArtifacts 'AutoHotkey' "$url_ahk"
 Invoke-DownloadArtifacts 'Ahk2Exe' "$url_ahk2exe"
 
 if ("$compression" -eq "upx") {
-    Invoke-ArtifactsDownload 'UPX' "$url_upx"
+    Invoke-DownloadArtifacts 'UPX' "$url_upx"
     Install-UPX
 }
 
