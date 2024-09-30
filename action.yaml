@@ -46,23 +46,41 @@ inputs:
       Specifies which compression method to use. Valid options: none, upx. Defaults to upx.
     default: 'upx'
 
-  url-ahk:
+  ahk-repo:
     required: false
     description: >
-      AutoHotkey download URL.
-    default: 'https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.18/AutoHotkey_2.0.18.zip'
+      GitHub repository source for AutoHotkey.
+    default: 'AutoHotkey/AutoHotkey'
 
-  url-ahk2exe:
+  ahk-tag:
     required: false
     description: >
-      Ahk2Exe download URL.
-    default: 'https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.02a0/Ahk2Exe1.1.37.02a0.zip'
+      Tagged GitHub release source for AutoHotkey.
+    default: 'v2.0.18'
 
-  url-upx:
+  ahk2exe-repo:
     required: false
     description: >
-      UPX download URL.
-    default: 'https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip'
+      GitHub repository source for Ahk2Exe.
+    default: 'AutoHotkey/Ahk2Exe'
+
+  ahk2exe-tag:
+    required: false
+    description: >
+      Tagged GitHub release source for Ahk2Exe.
+    default: 'latest'
+
+  upx-repo:
+    required: false
+    description: >
+      GitHub repository source for UPX.
+    default: 'UPX/UPX'
+
+  upx-tag:
+    required: false
+    description: >
+      Tagged GitHub release source for UPX.
+    default: 'latest'
 
   build-assets-folder:
     required: false
@@ -83,7 +101,12 @@ runs:
         Target: "${{ inputs.target }}"
         ResourceId: "${{ inputs.resourceid }}"
         Compression: "${{ inputs.compression }}"
-        Url_Ahk: "${{ inputs.url-ahk }}"
-        Url_Ahk2Exe: "${{ inputs.url-ahk2exe }}"
-        Url_UPX: "${{ inputs.url-upx }}"
+
+        AutoHotkeyRepo: "${{ inputs.ahk-repo }}"
+        AutoHotkeyTag: "${{ inputs.ahk-tag }}"
+        Ahk2ExeRepo: "${{ inputs.ahk2exe-repo }}"
+        Ahk2ExeTag: "${{ inputs.ahk2exe-tag }}"
+        UPXRepo: "${{ inputs.upx-repo }}"
+        UPXTag: "${{ inputs.upx-tag }}"
+        
         Build_Assets_Folder: "${{ inputs.build-assets-folder }}"
