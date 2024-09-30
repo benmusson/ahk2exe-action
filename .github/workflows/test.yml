@@ -11,6 +11,7 @@ jobs:
 
       - name: x64 Test
         uses: ./
+        continue-on-error: true
         with:
           in: .\test\scripts\test.ahk2
           out: .\output\test_x64.exe
@@ -20,6 +21,7 @@ jobs:
 
       - name: x86 Test
         uses: ./
+        continue-on-error: true
         with:
           in: .\test\scripts\test.ahk2
           out: .\output\test_x86.exe
@@ -29,14 +31,20 @@ jobs:
 
       - name: No Compression Test
         uses: ./
+        continue-on-error: true
         with:
-          in: ./test/scripts/test.ahk2
-          out: ./output/text_x64_uncompressed.exe
-          icon: ./test/icons/test.ico
+          in: .\test\scripts\test.ahk2
+          out: .\output\text_x64_uncompressed.exe
+          icon: .\test\icons/test.ico
           compression: none
 
 
-      - name: List output directories
-        shell: pwsh
+      - name: Check for Failed Test
         run: |
-          ls output
+          if(
+            ![System.IO.File]::Exists('.\output\test_x64.exe') ||
+            ![System.IO.File]::Exists('.\output\test_x86.exe') ||
+            ![System.IO.File]::Exists('.\output\text_x64_uncompressed.exe')
+          ) {
+            throw "Tests Failed"  
+          }
