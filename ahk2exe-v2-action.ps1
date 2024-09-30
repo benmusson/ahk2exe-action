@@ -107,7 +107,7 @@ function Install-AutoHotkey {
         Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
     }
 
-    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $searchFilter | Select-Object -First 1)
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse | Where-Object { $_.Name -match "^$searchFilter$" } | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $installPath
