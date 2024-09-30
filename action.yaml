@@ -74,7 +74,7 @@ runs:
   using: composite
   steps:
     - name: Build
-      shell: powershell
+      shell: pwsh
       run: ./ahk2exe-v2-action.ps1
       env:
         In: "${{ inputs.in }}"
