@@ -88,8 +88,11 @@ function Invoke-Ahk2Exe {
         'upx'  { $ahk2exe_args += " /compress 2" } 
         Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
     }
-
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($out)) { " /out `"$out`"" }
+    
+    if (![string]::IsNullOrEmpty($out)) { 
+        (New-Item -Path $out -ItemType File -Force)
+        $ahk2exe_args += " /out `"$out`"" 
+    }
     $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
     $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid  `"$resourceid`"" }
 
