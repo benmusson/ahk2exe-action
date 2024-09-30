@@ -134,46 +134,6 @@ function Install-UPX {
     }
 }
 
-function Invoke-Ahk2Exe {
-    param (
-        [string]$Path,
-        [string]$In,
-        [string]$Out,
-        [string]$Icon,
-        [string]$Base,
-        [string]$Compression = 'upx',
-        [string]$ResourceId
-    )
-    Show-Message "Build $Out" "Converting $In to $Out..." $StyleInfo $StyleAction
-
-    $ahk2exe_args = "/silent verbose /in `"$In`""
-    $ahk2exe_args += " /base `"$Base`""
-
-    Switch ($compression) {
-        'none' { $ahk2exe_args += " /compress 0" }
-        'upx'  { $ahk2exe_args += " /compress 2" } 
-        Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
-    }
-    
-    if (![string]::IsNullOrEmpty($Out)) { 
-        [void](New-Item -Path $Out -ItemType File -Force)
-        $ahk2exe_args += " /out `"$Out`"" 
-    }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($Icon)) { " /icon `"$Icon`"" }
-    $ahk2exe_args += if (![string]::IsNullOrEmpty($ResourcId)) { " /resourceid `"$ResourceId`"" }
-
-    $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$Path`" -ArgumentList '$ahk2exe_args'"
-
-    Show-Message "Build $Out" "`"$command`"" $StyleInfo $StyleCommand
-    $process = Invoke-Expression "$command"
-    $process | Wait-Process -Timeout 300
-    if ($process.ExitCode -ne 0) {
-        Throw "Exception occurred during build."
-    } else {
-        Show-Message "Build $Out" "Build completed" $StyleInfo $StyleStatus
-    }
-}
-
 function Install-AutoHotkey {
     Show-Message "Install Autohotkey" "Installing..." $StyleInfo $StyleAction
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
@@ -220,6 +180,46 @@ function Install-Ahk2Exe {
     Show-Message "Install Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
     Show-Message "Install Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
     return $exePath
+}
+
+function Invoke-Ahk2Exe {
+    param (
+        [string]$Path,
+        [string]$In,
+        [string]$Out,
+        [string]$Icon,
+        [string]$Base,
+        [string]$Compression = 'upx',
+        [string]$ResourceId
+    )
+    Show-Message "Build $Out" "Converting $In to $Out..." $StyleInfo $StyleAction
+
+    $ahk2exe_args = "/silent verbose /in `"$In`""
+    $ahk2exe_args += " /base `"$Base`""
+
+    Switch ($compression) {
+        'none' { $ahk2exe_args += " /compress 0" }
+        'upx'  { $ahk2exe_args += " /compress 2" } 
+        Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
+    }
+    
+    if (![string]::IsNullOrEmpty($Out)) { 
+        [void](New-Item -Path $Out -ItemType File -Force)
+        $ahk2exe_args += " /out `"$Out`"" 
+    }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($Icon)) { " /icon `"$Icon`"" }
+    $ahk2exe_args += if (![string]::IsNullOrEmpty($ResourceId)) { " /resourceid `"$ResourceId`"" }
+
+    $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$Path`" -ArgumentList '$ahk2exe_args'"
+
+    Show-Message "Build $Out" "`"$command`"" $StyleInfo $StyleCommand
+    $process = Invoke-Expression "$command"
+    $process | Wait-Process -Timeout 300
+    if ($process.ExitCode -ne 0) {
+        Throw "Exception occurred during build."
+    } else {
+        Show-Message "Build $Out" "Build completed" $StyleInfo $StyleStatus
+    }
 }
 
 function Invoke-Action {
