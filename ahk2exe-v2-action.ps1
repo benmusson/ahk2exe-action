@@ -154,8 +154,8 @@ function Install-UPX {
 
     Invoke-UnzipAllInPlace -TaskName "Install-UPX" -FolderPath $downloadFolder
 
-    $upxPath = Join-Path $downloadFolder $exeName
-    if (![System.IO.File]::Exists($upxPath)) { Throw "Missing UPX Executable '$exeName'." }
+    $upxPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
+    if ([string]::IsNullOrEmpty($upxPath)) { Throw "Missing UPX Executable '$exeName'." }
 
     Show-Message "Install-UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
     Show-Message "Install-UPX" "Source: $upxPath" $StyleInfo $StyleCommand
