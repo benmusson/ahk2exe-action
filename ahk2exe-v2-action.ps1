@@ -90,7 +90,7 @@ function Invoke-Ahk2Exe {
     }
     
     if (![string]::IsNullOrEmpty($out)) { 
-        (New-Item -Path $out -ItemType File -Force)
+        [void](New-Item -Path $out -ItemType File -Force)
         $ahk2exe_args += " /out `"$out`"" 
     }
     $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
