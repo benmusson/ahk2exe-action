@@ -60,7 +60,11 @@ function Install-UPX {
 
     Show-Message "Install UPX" "Searching for UPX executable..." $style_info $style_action
     foreach ($exe in Get-ChildItem -Path (Join-Path $path_assets "UPX") -Filter *.exe -Recurse)  {
-        Show-Message "Install UPX" "Found, copying to $destination" $style_info $style_command
+        Show-Message "Install UPX" "Found!" $style_info $style_command
+
+        Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $style_info $style_action
+        Show-Message "Install UPX" "Source: $ece" $style_info $style_command
+        Show-Message "Install UPX" "Destination: $destination" $style_info $style_command
         Move-Item -Path $exe.FullName -Destination $destination -Force
         break
     }
