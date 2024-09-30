@@ -1,3 +1,4 @@
+Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $path_assets = Join-Path $env:Build_Assets_Folder 'assets'
@@ -77,7 +78,7 @@ function Invoke-Ahk2Exe {
         [string]$compression = 'upx',
         [string]$resourceid
     )
-    Show-Message "Build $out" "Converting $ahk_input to $out..." $style_info $style_action
+    Show-Message "Build $out" "Converting $in to $out..." $style_info $style_action
 
     $ahk2exe_path = Join-Path $path_assets 'Ahk2Exe/Ahk2Exe.exe'
     $ahk2exe_args = "/silent verbose /in `"$in`""
