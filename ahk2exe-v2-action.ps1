@@ -63,7 +63,7 @@ function Get-GitHubReleaseAssets {
     if ([string]::IsNullOrEmpty($repositoryOwner)) { Throw "Invalid repository path, missing repository owner."}
     if ([string]::IsNullOrEmpty($repositoryName)) { Throw "Invalid repository path, missing repository name."}
 
-    $displayPath = "$repositoryOwner/$repositoryName/$releaseTag"
+    $displayPath = "$repositoryOwner/$repositoryName/$ReleaseTag"
     $downloadFolderName = $displayPath.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
     $downloadFolder = Join-Path $PathDownloads $downloadFolderName
     if (Test-Path -Path $downloadFolder) { 
@@ -73,10 +73,10 @@ function Get-GitHubReleaseAssets {
         }
     }
 
-    if ($Tag -like 'latest') {
+    if ($ReleaseTag -like 'latest') {
         $apiUrl = "https://api.github.com/repos/$repositoryOwner/$repositoryName/releases/latest"
     } else {
-        $apiUrl = "https://api.github.com/repos/$repositoryOwner/$repositoryName/releases/tags/$Tag"
+        $apiUrl = "https://api.github.com/repos/$repositoryOwner/$repositoryName/releases/tags/$ReleaseTag"
     }
 
     Show-Message "Get-Assets $displayPath" "Getting release information..." $StyleInfo $StyleAction
