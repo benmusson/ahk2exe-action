@@ -1,8 +1,8 @@
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
-$PathAssets = Join-Path $env:Build_Assets_Folder 'assets'
-$PathDownloads = Join-Path $env:Build_Assets_Folder 'downloads'
+$PathAssets = $env:BuildAssetsFolder
+$PathDownloads = $env:BuildAssetsFolder
 
 $StyleInfo = $PSStyle.Foreground.Blue
 $StyleAction = $PSStyle.Foreground.Green
@@ -105,6 +105,8 @@ function Get-GitHubReleaseAssets {
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadDestination)
         Show-Message "Get-Assets $displayPath - $fileName" "Download completed" $StyleInfo $StyleStatus
     }
+    Show-Message "Get-Assets $displayPath" "Downloading assets completed" $StyleInfo $StyleStatus
+    return $downloadFolder
 }
 
 function Install-UPX {

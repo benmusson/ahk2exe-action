@@ -108,5 +108,5 @@ runs:
         Ahk2ExeTag: "${{ inputs.ahk2exe-tag }}"
         UPXRepo: "${{ inputs.upx-repo }}"
         UPXTag: "${{ inputs.upx-tag }}"
-        
-        Build_Assets_Folder: "${{ inputs.build-assets-folder }}"
+
+        BuildAssetsFolder: "${{ inputs.build-assets-folder }}"
