@@ -16,7 +16,7 @@ function Show-Message {
         [string]$header_style = $PSStyle.Foreground.Green,
         [string]$message_style = $PSStyle.Foreground.White
     )
-    Write-Host "header_style::$header::$($PSStyle.Reset) " -NoNewLine
+    Write-Host "$header_style::$header::$($PSStyle.Reset) " -NoNewLine
     Write-Host "$message_style$message$($PSStyle.Reset)"
 }
 
