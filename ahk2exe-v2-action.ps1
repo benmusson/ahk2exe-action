@@ -101,7 +101,8 @@ function Install-AutoHotkey {
     }
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
-    $installPath = Join-Path $downloadFolder $exeName
+
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $installPath
@@ -109,6 +110,7 @@ function Install-AutoHotkey {
 
     Invoke-UnzipAllInPlace -TaskName "Install-Autohotkey" -FolderPath $downloadFolder
 
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if (![System.IO.File]::Exists($installPath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
     Show-Message "Install-Autohotkey" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-Autohotkey" "Installation completed" $StyleInfo $StyleStatus
@@ -121,7 +123,8 @@ function Install-Ahk2Exe {
     $exeName = 'Ahk2Exe.exe'
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
-    $installPath = Join-Path $downloadFolder $exeName
+
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Ahk2Exe" "Ahk2Exe is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $installPath
@@ -129,6 +132,7 @@ function Install-Ahk2Exe {
 
     Invoke-UnzipAllInPlace -TaskName "Install-Ahk2Exe" -FolderPath $downloadFolder
 
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if (![System.IO.File]::Exists($installPath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
     Show-Message "Install-Ahk2Exe" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
@@ -162,7 +166,7 @@ function Install-UPX {
     Show-Message "Install-UPX" "Destination: $installPath" $StyleInfo $StyleCommand
     Move-Item -Path $upxPath -Destination $installPath -Force
 
-    if ([System.IO.File]::Exists($installPath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
+    if (![System.IO.File]::Exists($installPath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
     Show-Message "Install-UPX" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-UPX" "Installation completed" $StyleInfo $StyleStatus
     return $installPath
