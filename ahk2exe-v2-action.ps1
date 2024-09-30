@@ -11,7 +11,7 @@ function Show-Message {
         [string]$message_color = "White"
     )
     Write-Host "$($PSStyle.Foreground.Blue)::$header::$($PSStyle.Reset) " -NoNewLine
-    Write-Host "$($PSStyle.Foreground.$message_color)$message$($PSStyle.Reset)"
+    Write-Host "$message" -ForegoundColor $message_color
 }
 
 function Invoke-DownloadArtifacts {
