@@ -112,7 +112,7 @@ Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
 Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
 
 if ("$env:Compression" -eq "upx") {
-    Invoke-DownloadArtifacts 'UPX' "$Url_UPX"
+    Invoke-DownloadArtifacts 'UPX' "$env:Url_UPX"
     Install-UPX
 }
 

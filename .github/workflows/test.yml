@@ -21,7 +21,7 @@ jobs:
       - name: x86 Test
         uses: ./
         with:
-          in: .\test\scripts/\est.ahk2
+          in: .\test\scripts\test.ahk2
           out: .\output\test_x86.exe
           icon: .\test\icons\test.ico
           compression: upx
