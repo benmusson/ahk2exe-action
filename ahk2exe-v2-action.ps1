@@ -191,7 +191,7 @@ function Install-UPX {
     Invoke-UnzipAllInPlace -TaskName "Install UPX" -FolderPath $downloadFolder
 
     Show-Message "Install UPX" "Searching for UPX executable..." $StyleInfo $StyleAction
-    foreach ($exe in Get-ChildItem -Path (Join-Path $PathAssets "UPX") -Filter *.exe -Recurse)  {
+    foreach ($exe in Get-ChildItem -Path $downloadFolder -Filter *.exe -Recurse)  {
         Show-Message "Install UPX" "Found!" $StyleInfo $StyleCommand
 
         Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
