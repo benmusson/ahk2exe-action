@@ -21,37 +21,6 @@ function Show-Message {
     Write-Host "$message_style$message$($PSStyle.Reset)"
 }
 
-function Invoke-DownloadArtifacts {
-    param (
-        [string]$name, 
-        [string]$url
-    )
-    $path_zip = Join-Path $PathDownloads
- "$name.zip"
-    $path_final = Join-Path $PathAssets $name
-
-    if (Test-Path -Path $path_final) { 
-        if ((Get-ChildItem -Path "$path_final" | Measure-Object).Count -gt 0) {
-            Show-Message "Download $name" "$name is already present, skipping re-download..." $StyleInfo $StyleQuiet
-            return
-        }
-    }
-
-    Show-Message "Download $name" "Downloading..." $StyleInfo $StyleAction
-    Show-Message "Download $name" "Source: $url" $StyleInfo $StyleCommand
-    Show-Message "Download $name" "Destination: $path_zip" $StyleInfo $StyleCommand
-    [void](New-Item -ItemType Directory -Path $PathDownloads -Force)
-    [void](New-Object System.Net.WebClient).DownloadFile($url, $path_zip)
-    Show-Message "Download $name" "Download completed" $StyleInfo $StyleStatus
-
-    Show-Message "Download $name" "Extracting..." $StyleInfo $StyleAction
-    Show-Message "Download $name" "Source: $path_zip" $StyleInfo $StyleCommand
-    Show-Message "Download $name" "Destination: $path_final" $StyleInfo $StyleCommand
-    [void](New-Item -ItemType Directory -Path $PathAssets -Force)
-    Expand-Archive -Force $path_zip -DestinationPath $path_final
-    Show-Message "Download $name" "Extraction completed" $StyleInfo $StyleStatus
-}
-
 function Get-GitHubReleaseAssets {
     param (
         [string]$Repository,
@@ -68,7 +37,7 @@ function Get-GitHubReleaseAssets {
     $downloadFolder = Join-Path $PathDownloads $downloadFolderName
     if (Test-Path -Path $downloadFolder) { 
         if ((Get-ChildItem -Path "$downloadFolder" | Measure-Object).Count -gt 0) {
-            Show-Message "Get-Assets $displayPath" "$displayPath is already present, skipping re-download..." $StyleInfo $StyleQuiet
+            Show-Message "Download-$displayPath" "$displayPath is already present, skipping re-download..." $StyleInfo $StyleQuiet
             return $downloadFolder
         }
     }
@@ -79,31 +48,31 @@ function Get-GitHubReleaseAssets {
         $apiUrl = "https://api.github.com/repos/$repositoryOwner/$repositoryName/releases/tags/$ReleaseTag"
     }
 
-    Show-Message "Get-Assets $displayPath" "Getting release information..." $StyleInfo $StyleAction
+    Show-Message "Download-$displayPath" "Getting release information..." $StyleInfo $StyleAction
     $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ "User-Agent" = "PowerShell" }
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
 
-    Show-Message "Get-Assets $displayPath" "Filtering assets for '$FileTypeFilter' files..." $StyleInfo $StyleAction
+    Show-Message "Download-$displayPath" "Filtering assets for '$FileTypeFilter' files..." $StyleInfo $StyleAction
     $filteredAssets = $assets | Where-Object { $_.name -like "$FileTypeFilter" }
     if ($filteredAssets.Count -eq 0) { Throw "No assets matching the file type '$FileTypeFilter' found." }
-    Show-Message "Get-Assets $displayPath" "Found files: $filteredAssets" $StyleInfo $StyleCommand
+    Show-Message "Download-$displayPath" "Found files: $filteredAssets" $StyleInfo $StyleCommand
 
-    Show-Message "Get-Assets $displayPath" "Downloading assets..." $StyleInfo $StyleAction
+    Show-Message "Download-$displayPath" "Downloading assets..." $StyleInfo $StyleAction
     foreach ($asset in $filteredAssets) {
         $downloadUrl = $asset.browser_download_url
         $fileName = $asset.name
         $downloadDestination = Join-Path $downloadFolder $fileName
 
-        Show-Message "Get-Assets $displayPath - $fileName" "Downloading..." $StyleInfo $StyleAction
-        Show-Message "Get-Assets $displayPath - $fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
-        Show-Message "Get-Assets $displayPath - $fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
+        Show-Message "Download-$fileName" "Downloading..." $StyleInfo $StyleAction
+        Show-Message "Download-$fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
+        Show-Message "Download-$fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
         [void](New-Item -ItemType Directory -Path $downloadFolder -Force)
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadDestination)
-        Show-Message "Get-Assets $displayPath - $fileName" "Download completed" $StyleInfo $StyleStatus
+        Show-Message "Download-$fileName" "Download completed" $StyleInfo $StyleStatus
     }
-    Show-Message "Get-Assets $displayPath" "Downloading assets completed" $StyleInfo $StyleStatus
+    Show-Message "Download-$displayPath" "Downloading assets completed" $StyleInfo $StyleStatus
     return $downloadFolder
 }
 
@@ -123,7 +92,7 @@ function Invoke-UnzipAllInPlace {
 }
 
 function Install-AutoHotkey {
-    Show-Message "Install Autohotkey" "Installing..." $StyleInfo $StyleAction
+    Show-Message "Install-Autohotkey" "Installing..." $StyleInfo $StyleAction
 
     switch ($env:Target) {
         'x64' { $exeName = 'AutoHotkey64.exe' }
@@ -134,35 +103,35 @@ function Install-AutoHotkey {
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
     $exePath = Join-Path $downloadFolder $exeName
     if ([System.IO.File]::Exists($exePath)) { 
-        Show-Message "Install Autohotkey" "Autohotkey is already installed, skipping re-installed..." $StyleInfo $StyleStatus
+        Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $exePath
     }
 
     Invoke-UnzipAllInPlace -TaskName "Install Autohotkey" -FolderPath $downloadFolder
 
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
-    Show-Message "Install Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
-    Show-Message "Install Autohotkey" "Installation completed" $StyleInfo $StyleStatus
+    Show-Message "Install-Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
+    Show-Message "Install-Autohotkey" "Installation completed" $StyleInfo $StyleStatus
     return $exePath
 }
 
 function Install-Ahk2Exe {
-    Show-Message "Install Ahk2Exe" "Installing..." $StyleInfo $StyleAction
+    Show-Message "Install-Ahk2Exe" "Installing..." $StyleInfo $StyleAction
 
     $exeName = 'Ahk2Exe.exe'
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
     $exePath = Join-Path $downloadFolder $exeName
     if ([System.IO.File]::Exists($exePath)) { 
-        Show-Message "Install Ahk2Exe" "Ahk2Exe is already installed, skipping re-installation..." $StyleInfo $StyleStatus
+        Show-Message "Install-Ahk2Exe" "Ahk2Exe is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $exePath
     }
 
-    Invoke-UnzipAllInPlace -TaskName "Install Ahk2Exe" -FolderPath $downloadFolder
+    Invoke-UnzipAllInPlace -TaskName "Install-Ahk2Exe" -FolderPath $downloadFolder
 
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
-    Show-Message "Install Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
-    Show-Message "Install Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
+    Show-Message "Install-Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
+    Show-Message "Install-Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
     return $exePath
 }
 
@@ -171,34 +140,32 @@ function Install-UPX {
         [string]$Ahk2ExePath
     )
 
+    Show-Message "Install-UPX" "Installing..." $StyleInfo $StyleAction
+
     $exeName = 'upx.exe'
     $ahk2exeFolder = Split-Path -Path $Ahk2ExePath -Parent 
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
     $exePath = Join-Path $ahk2exeFolder $exeName
     if ([System.IO.File]::Exists($exePath)) {
-        Show-Message "Install UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
+        Show-Message "Install-UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return
     }
 
-    Invoke-UnzipAllInPlace -TaskName "Install UPX" -FolderPath $downloadFolder
+    Invoke-UnzipAllInPlace -TaskName "Install-UPX" -FolderPath $downloadFolder
 
-    Show-Message "Install UPX" "Searching for UPX executable..." $StyleInfo $StyleAction
-    foreach ($exe in Get-ChildItem -Path $downloadFolder -Filter *.exe -Recurse)  {
-        Show-Message "Install UPX" "Found!" $StyleInfo $StyleCommand
+    $upxPath = Join-Path $downloadFolder $exeName
+    if (![System.IO.File]::Exists($upxPath)) { Throw "Missing UPX Executable '$exeName'." }
 
-        Show-Message "Install UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
-        Show-Message "Install UPX" "Source: $exe" $StyleInfo $StyleCommand
-        Show-Message "Install UPX" "Destination: $exePath" $StyleInfo $StyleCommand
-        Move-Item -Path $exe -Destination $exePath -Force
-        break
-    }
+    Show-Message "Install-UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
+    Show-Message "Install-UPX" "Source: $upxPath" $StyleInfo $StyleCommand
+    Show-Message "Install-UPX" "Destination: $exePath" $StyleInfo $StyleCommand
+    Move-Item -Path $exe -Destination $exePath -Force
 
-    if ([System.IO.File]::Exists($exePath)) {
-        Show-Message "Install UPX" "Installation successful" $StyleInfo $StyleStatus
-    } else {
-        throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed."
-    }
+    if ([System.IO.File]::Exists($exePath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
+    Show-Message "Install-UPX" "Installation path: $exePath" $StyleInfo $StyleCommand
+    Show-Message "Install-UPX" "Installation completed" $StyleInfo $StyleStatus
+    return $exePath
 }
 
 function Invoke-Ahk2Exe {
@@ -237,12 +204,12 @@ function Invoke-Ahk2Exe {
     if ($process.ExitCode -ne 0) {
         Throw "Exception occurred during build."
     } else {
-        Show-Message "Build $Out" "Build completed" $StyleInfo $StyleStatus
+        Show-Message "Build-$Out" "Build completed" $StyleInfo $StyleStatus
     }
 }
 
 function Invoke-Action {
-	Show-Message "Action Started" "" $StyleStatus
+	Show-Message "Action-Started" "" $StyleStatus
     
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
@@ -252,7 +219,7 @@ function Invoke-Action {
 	}
 	
 	Invoke-Ahk2Exe -Path "$ahk2exePath" -Base "$ahkPath" -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
-	Show-Message "Action Finished" "" $StyleStatus
+	Show-Message "Action-Finished" "" $StyleStatus
 }
 	
 Invoke-Action
