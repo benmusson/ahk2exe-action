@@ -13,9 +13,9 @@ jobs:
         uses: ./
         continue-on-error: true
         with:
-          in: .\test\scripts\test.ahk2
+          in: .\testing\v2.0\test.ahk
           out: .\output\test_x64.exe
-          icon: .\test\icons\test.ico
+          icon: .\testing\icons\test.ico
           compression: upx
           target: x64
 
@@ -23,9 +23,9 @@ jobs:
         uses: ./
         continue-on-error: true
         with:
-          in: .\test\scripts\test.ahk2
+          in: .\testing\v2.0\test.ahk
           out: .\output\test_x86.exe
-          icon: .\test\icons\test.ico
+          icon: .\testing\icons\test.ico
           compression: upx
           target: x86
 
@@ -33,16 +33,16 @@ jobs:
         uses: ./
         continue-on-error: true
         with:
-          in: .\test\scripts\test.ahk2
+          in: .\testing\v2.0\test.ahk
           out: .\output\text_x64_uncompressed.exe
-          icon: .\test\icons\test.ico
+          icon: .\testing\icons\test.ico
           compression: none
 
       - name: Test No Icon
         uses: ./
         continue-on-error: true
         with:
-          in: .\test\scripts\test.ahk2
+          in: .\testing\v2.0\test.ahk
           out: .\output\test_no_icon.exe
           target: x64
 

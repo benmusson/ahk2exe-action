@@ -114,12 +114,11 @@ function Invoke-UnzipAllInPlace {
     )
 
     foreach ($zip in Get-ChildItem -Path $FolderPath -Filter *.zip -Recurse) {
-        Show-Message "$TaskName" "Extracting..." $StyleInfo $StyleAction
+        Show-Message "$TaskName" "Extracting $zip..." $StyleInfo $StyleAction
         Show-Message "$TaskName" "Source: $zip" $StyleInfo $StyleCommand
         Show-Message "$TaskName" "Destination: $FolderPath" $StyleInfo $StyleCommand
         [void](New-Item -ItemType Directory -Path $PathAssets -Force)
         Expand-Archive -Force $zip -DestinationPath $FolderPath
-        Show-Message "$TaskName" "Extraction completed" $StyleInfo $StyleStatus
     }
 }
 
@@ -137,16 +136,9 @@ function Install-AutoHotkey {
     if ([System.IO.File]::Exists($exePath)) { 
         Show-Message "Install Autohotkey" "Autohotkey is already installed, skipping re-installed..." $StyleInfo $StyleStatus
         return $exePath
-     }
-
-    foreach ($zip in Get-ChildItem -Path $downloadFolder -Filter *.zip -Recurse) {
-        Show-Message "Install Autohotkey" "Extracting..." $StyleInfo $StyleAction
-        Show-Message "Install Autohotkey" "Source: $zip" $StyleInfo $StyleCommand
-        Show-Message "Install Autohotkey" "Destination: $downloadFolder" $StyleInfo $StyleCommand
-        [void](New-Item -ItemType Directory -Path $PathAssets -Force)
-        Expand-Archive -Force $zip -DestinationPath $downloadFolder
-        Show-Message "Install Autohotkey" "Extraction completed" $StyleInfo $StyleStatus
     }
+
+    Invoke-UnzipAllInPlace -TaskName "Install Autohotkey" -FolderPath $downloadFolder
 
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
     Show-Message "Install Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
@@ -180,9 +172,10 @@ function Install-UPX {
     )
 
     $exeName = 'upx.exe'
+    $ahk2exeFolder = Split-Path -Path $Ahk2ExePath -Parent 
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
-    $exePath = Join-Path $Ahk2ExePath $exeName
+    $exePath = Join-Path $ahk2exeFolder $exeName
     if ([System.IO.File]::Exists($exePath)) {
         Show-Message "Install UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return
