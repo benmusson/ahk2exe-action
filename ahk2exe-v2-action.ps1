@@ -96,12 +96,18 @@ function Install-AutoHotkey {
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
 
     switch ($env:Target) {
-        'x64' { $exeName = 'AutoHotkey(U)?64\.exe' }
-        'x86' { $exeName = 'AutoHotkey(U)?32\.exe' }
+        'x64' { 
+            $exeName = 'AutoHotkey64.exe' 
+            $searchFilter = 'AutoHotkey(U)?64\.exe'
+        }
+        'x86' { 
+            $exeName = 'AutoHotkey32.exe' 
+            $searchFilter = 'AutoHotkey(U)?32\.exe'
+        }
         Default { Throw "Unsupported Architecture: '$target'. Valid Options: x64, x86" }
     }
 
-    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $searchFilter | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return $installPath
