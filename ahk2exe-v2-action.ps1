@@ -92,11 +92,17 @@ function Invoke-Ahk2Exe {
     $ahk2exe_args += if (![string]::IsNullOrEmpty($icon)) { " /icon `"$icon`"" }
     $ahk2exe_args += if (![string]::IsNullOrEmpty($resourceid)) { " /resourceid  `"$resourceid`"" }
 
-    $command = "Start-Process -NoNewWindow -Wait -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
+    $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
 
     Show-Message "Build $out" "`"$command`"" "Blue" "DarkYellow"
-    Invoke-Expression "$command"
-    Show-Message "Build $out" "Build completed" "Blue" "Magenta"
+    $process = Invoke-Expression "$command"
+    $process | Wait-Process -Timeout 30
+    if ($process.ExitCode -ne 0) {
+        Throw "Exception occurred during build."
+    } else {
+        Show-Message "Build $out" "Build completed" "Blue" "Magenta"
+    }
+    
 }
 
 Show-Message "Build Started" "" "Magenta"
