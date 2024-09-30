@@ -49,7 +49,6 @@ function Invoke-DownloadArtifacts {
     [void](New-Item -ItemType Directory -Path $path_assets -Force)
     Expand-Archive -Force $path_zip -DestinationPath $path_final
     Show-Message "Download $name" "Extraction completed" $style_info $style_status
-    
 }
 
 function Install-UPX {
