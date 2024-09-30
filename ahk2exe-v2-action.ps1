@@ -101,18 +101,18 @@ function Install-AutoHotkey {
     }
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:AutoHotkeyRepo" -ReleaseTag "$env:AutoHotkeyTag" -FileTypeFilter "*.zip"
-    $exePath = Join-Path $downloadFolder $exeName
-    if ([System.IO.File]::Exists($exePath)) { 
+    $installPath = Join-Path $downloadFolder $exeName
+    if ([System.IO.File]::Exists($installPathh)) { 
         Show-Message "Install-Autohotkey" "Autohotkey is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
-        return $exePath
+        return $installPath
     }
 
     Invoke-UnzipAllInPlace -TaskName "Install-Autohotkey" -FolderPath $downloadFolder
 
-    if (![System.IO.File]::Exists($exePath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
-    Show-Message "Install-Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
+    if (![System.IO.File]::Exists($installPath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
+    Show-Message "Install-Autohotkey" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-Autohotkey" "Installation completed" $StyleInfo $StyleStatus
-    return $exePath
+    return $installPath
 }
 
 function Install-Ahk2Exe {
@@ -121,18 +121,18 @@ function Install-Ahk2Exe {
     $exeName = 'Ahk2Exe.exe'
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:Ahk2ExeRepo" -ReleaseTag "$env:Ahk2ExeTag" -FileTypeFilter "*.zip"
-    $exePath = Join-Path $downloadFolder $exeName
-    if ([System.IO.File]::Exists($exePath)) { 
+    $installPath = Join-Path $downloadFolder $exeName
+    if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Install-Ahk2Exe" "Ahk2Exe is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
-        return $exePath
+        return $installPath
     }
 
     Invoke-UnzipAllInPlace -TaskName "Install-Ahk2Exe" -FolderPath $downloadFolder
 
-    if (![System.IO.File]::Exists($exePath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
-    Show-Message "Install-Ahk2Exe" "Installation path: $exePath" $StyleInfo $StyleCommand
+    if (![System.IO.File]::Exists($installPath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
+    Show-Message "Install-Ahk2Exe" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-Ahk2Exe" "Installation completed" $StyleInfo $StyleStatus
-    return $exePath
+    return $installPath
 }
 
 function Install-UPX {
@@ -146,8 +146,8 @@ function Install-UPX {
     $ahk2exeFolder = Split-Path -Path $Ahk2ExePath -Parent 
 
     $downloadFolder = Get-GitHubReleaseAssets -Repository "$env:UPXRepo" -ReleaseTag "$env:UPXTag" -FileTypeFilter "*win64.zip"
-    $exePath = Join-Path $ahk2exeFolder $exeName
-    if ([System.IO.File]::Exists($exePath)) {
+    $installPath = Join-Path $ahk2exeFolder $exeName
+    if ([System.IO.File]::Exists($installPath)) {
         Show-Message "Install-UPX" "UPX is already installed, skipping re-installation..." $StyleInfo $StyleQuiet
         return
     }
@@ -155,17 +155,17 @@ function Install-UPX {
     Invoke-UnzipAllInPlace -TaskName "Install-UPX" -FolderPath $downloadFolder
 
     $upxPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
-    if ([string]::IsNullOrEmpty($upxPath)) { Throw "Missing UPX Executable '$exeName'." }
+    if ([string]::IsNullOrEmpty($upxPath)) { Throw "Missing UPX Executable '$upxPath'." }
 
     Show-Message "Install-UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
     Show-Message "Install-UPX" "Source: $upxPath" $StyleInfo $StyleCommand
-    Show-Message "Install-UPX" "Destination: $exePath" $StyleInfo $StyleCommand
-    Move-Item -Path $exe.FullName -Destination $exePath -Force
+    Show-Message "Install-UPX" "Destination: $installPath" $StyleInfo $StyleCommand
+    Move-Item -Path $upxPath -Destination $installPath -Force
 
-    if ([System.IO.File]::Exists($exePath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
-    Show-Message "Install-UPX" "Installation path: $exePath" $StyleInfo $StyleCommand
+    if ([System.IO.File]::Exists($installPath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
+    Show-Message "Install-UPX" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-UPX" "Installation completed" $StyleInfo $StyleStatus
-    return $exePath
+    return $installPath
 }
 
 function Invoke-Ahk2Exe {

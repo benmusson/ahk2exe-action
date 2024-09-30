@@ -62,6 +62,30 @@ jobs:
           target: x64
           resourceid: 5
 
+      - name: Test Specified Tags
+        uses: ./
+        continue-on-error: true
+        with:
+          in: .\testing\v2.0\test.ahk
+          out: .\output\test_tags.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          ahk-tag: v2.0.17
+          ahk2exe-tag: Ahk2Exe1.1.36.02f1
+          upx-tag: v4.2.4
+
+      - name: Test v1.1
+        uses: ./
+        continue-on-error: true
+        with:
+          in: .\testing\v1.1\test.ahk
+          out: .\output\test_11.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          ahk-tag: v1.1.37.02
+
       - name: Check for Failed Test
         run: |
           if(
