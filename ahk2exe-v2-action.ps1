@@ -62,7 +62,7 @@ function Install-UPX {
     }
 
     if ([System.IO.File]::Exists($destination)) {
-        Show-Message "Install UPX" "Installation Successful" $style_info $style_status
+        Show-Message "Install UPX" "Installation successful" $style_info $style_status
     } else {
         throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed."
     }
