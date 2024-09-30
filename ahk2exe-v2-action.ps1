@@ -115,7 +115,8 @@ function Install-AutoHotkey {
 
     Invoke-UnzipAllInPlace -TaskName "Install-Autohotkey" -FolderPath $downloadFolder
 
-    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
+    Show-Message "Install-Autohotkey" "Verifying installation..." $StyleInfo $StyleAction
+    $installPath = (Get-ChildItem -Path $downloadFolder -Recurse | Where-Object { $_.Name -match "^$searchFilter$" } | Select-Object -First 1)
     if (![System.IO.File]::Exists($installPath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
     Show-Message "Install-Autohotkey" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-Autohotkey" "Installation completed" $StyleInfo $StyleStatus
@@ -136,6 +137,7 @@ function Install-Ahk2Exe {
 
     Invoke-UnzipAllInPlace -TaskName "Install-Ahk2Exe" -FolderPath $downloadFolder
 
+    Show-Message "Install-Ahk2Exe" "Verifying installation..." $StyleInfo $StyleAction
     $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if (![System.IO.File]::Exists($installPath)) { Throw "Missing Ahk2Exe Executable '$exeName'." }
     Show-Message "Install-Ahk2Exe" "Installation path: $installPath" $StyleInfo $StyleCommand
@@ -170,6 +172,7 @@ function Install-UPX {
     Show-Message "Install-UPX" "Destination: $installPath" $StyleInfo $StyleCommand
     Move-Item -Path $upxPath -Destination $installPath -Force
 
+    Show-Message "Install-UPX" "Verifying installation..." $StyleInfo $StyleAction
     if (![System.IO.File]::Exists($installPath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
     Show-Message "Install-UPX" "Installation path: $installPath" $StyleInfo $StyleCommand
     Show-Message "Install-UPX" "Installation completed" $StyleInfo $StyleStatus
@@ -223,7 +226,7 @@ function Invoke-Action {
     $ahk2exePath = Install-Ahk2Exe
 
 	if ("$env:Compression" -eq "upx") {
-	    Install-UPX -Ahk2ExePath $ahk2exePath
+	    [void](Install-UPX -Ahk2ExePath $ahk2exePath)
 	}
 	
 	Invoke-Ahk2Exe -Path "$ahk2exePath" -Base "$ahkPath" -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
