@@ -6,14 +6,14 @@ $path_downloads = Join-Path $env:Build_Assets_Folder 'downloads'
 $style_info = $PSStyle.Foreground.Blue
 $style_action = $PSStyle.Foreground.Green
 $style_status = $PSStyle.Foreground.Magenta
-$style_command = $PSStyle.Foreground.DarkYellow
-$style_quiet = $PSStyle.Foreground.DarkGray
+$style_command = $PSStyle.Foreground.Yellow
+$style_quiet = $PSStyle.Foreground.BrightBlack
 
 function Show-Message {
     param (
         [string]$header,
         [string]$message,
-        [string]$header_style = $PSStyle.Foreground.Green,
+        [string]$header_style = $PSStyle.Foreground.Blue,
         [string]$message_style = $PSStyle.Foreground.White
     )
     Write-Host "$header_style::$header::$($PSStyle.Reset) " -NoNewLine
@@ -50,19 +50,19 @@ function Invoke-DownloadArtifacts {
 function Install-UPX {
     $destination = Join-Path "$path_assets" "Ahk2Exe\upx.exe"
     if ([System.IO.File]::Exists($destination)) {
-        Show-Message "Install UPX" "UPX is already installed, skipping installation..." "Blue" "DarkGray"
+        Show-Message "Install UPX" "UPX is already installed, skipping installation..." $style_info $style_quiet
         return
     }
 
-    Show-Message "Install UPX" "Searching for UPX executable..." "Blue" "DarkGreen"
+    Show-Message "Install UPX" "Searching for UPX executable..." $style_info $style_action
     foreach ($exe in Get-ChildItem -Path (Join-Path $path_assets "UPX") -Filter *.exe -Recurse)  {
-        Show-Message "Install UPX" "Found, copying to $destination" "Blue" "Yellow"
+        Show-Message "Install UPX" "Found, copying to $destination" $style_info $style_command
         Move-Item -Path $exe.FullName -Destination $destination -Force
         break
     }
 
     if ([System.IO.File]::Exists($destination)) {
-        Show-Message "Install UPX" "Installation Successful" "Blue" "Magenta"
+        Show-Message "Install UPX" "Installation Successful" $style_info $style_status
     } else {
         throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed."
     }
@@ -77,7 +77,7 @@ function Invoke-Ahk2Exe {
         [string]$compression = 'upx',
         [string]$resourceid
     )
-    Show-Message "Build $out" "Converting $ahk_input to $out..." "Blue" "DarkGreen"
+    Show-Message "Build $out" "Converting $ahk_input to $out..." $style_info $style_action
 
     $ahk2exe_path = Join-Path $path_assets 'Ahk2Exe/Ahk2Exe.exe'
     $ahk2exe_args = "/silent verbose /in `"$in`""
@@ -104,17 +104,17 @@ function Invoke-Ahk2Exe {
 
     $command = "Start-Process -NoNewWindow -PassThru -FilePath `"$ahk2exe_path`" -ArgumentList '$ahk2exe_args'"
 
-    Show-Message "Build $out" "`"$command`"" "Blue" "DarkYellow"
+    Show-Message "Build $out" "`"$command`"" $style_info $style_command
     $process = Invoke-Expression "$command"
     $process | Wait-Process -Timeout 30
     if ($process.ExitCode -ne 0) {
         Throw "Exception occurred during build."
     } else {
-        Show-Message "Build $out" "Build completed" "Blue" "Magenta"
+        Show-Message "Build $out" "Build completed" $style_info $style_status
     }
 }
 
-Show-Message "Build Started" "" "Magenta"
+Show-Message "Build Started" "" $style_status
 
 Invoke-DownloadArtifacts 'AutoHotkey' "$env:Url_Ahk"
 Invoke-DownloadArtifacts 'Ahk2Exe' "$env:Url_Ahk2Exe"
@@ -126,4 +126,4 @@ if ("$env:Compression" -eq "upx") {
 
 Invoke-Ahk2Exe -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Target "$env:Target" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
 
-Show-Message "Build Finished" "" "Magenta"
+Show-Message "Build Finished" "" $style_status
