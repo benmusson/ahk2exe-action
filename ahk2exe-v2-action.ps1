@@ -3,15 +3,21 @@ $ErrorActionPreference = "Stop"
 $path_assets = Join-Path $env:Build_Assets_Folder 'assets'
 $path_downloads = Join-Path $env:Build_Assets_Folder 'downloads'
 
+$style_info = "$($PSStyle.Foreground.Blue)"
+$style_action = "$($PSStyle.Foreground.Green)"
+$style_status = "$($PSStyle.Foreground.Magenta)"
+$style_command = "$($PSStyle.Foreground.DarkYellow)"
+$style_quiet = "$($PSStyle.Foreground.DarkGrag)"
+
 function Show-Message {
     param (
         [string]$header,
         [string]$message,
-        [string]$header_color = "Green",
-        [string]$message_color = "White"
+        [string]$header_color = "$($PSStyle.Foreground.Green)",
+        [string]$message_color = "$($PSStyle.Foreground.White)"
     )
-    Write-Host "$($PSStyle.Foreground.Blue)::$header::$($PSStyle.Reset) " -NoNewLine
-    Write-Host "$message" -ForegroundColor $message_color
+    Write-Host "$header_style::$header::$($PSStyle.Reset) " -NoNewLine
+    Write-Host "$message_style$message$($PSStyle.Reset)"
 }
 
 function Invoke-DownloadArtifacts {
@@ -24,13 +30,13 @@ function Invoke-DownloadArtifacts {
 
     if (Test-Path -Path $path_final) { 
         if ((Get-ChildItem -Path "$path_final" | Measure-Object).Count -gt 0) {
-            Show-Message "Download $name" "$name is already present, skipping re-download..." "Blue" "DarkGray"
+            Show-Message "Download $name" "$name is already present, skipping re-download..." $style_info $style_quiet
             return
         }
     }
-    Show-Message "Download $name" "Downloading..." "Blue" "DarkGreen"
-    Show-Message "Download $name" "Source: $url" "Blue" "DarkYellow"
-    Show-Message "Download $name" "Destination: $path_zip" "Blue" "DarkYellow"
+    Show-Message "Download $name" "Downloading..." $style_info $style_action
+    Show-Message "Download $name" "Source: $url" $style_info $style_command
+    Show-Message "Download $name" "Destination: $path_zip" $style_info $style_command
     
     [void](New-Item -ItemType Directory -Path $path_downloads -Force)
     [void](New-Object System.Net.WebClient).DownloadFile($url, $path_zip)
@@ -38,7 +44,7 @@ function Invoke-DownloadArtifacts {
     [void](New-Item -ItemType Directory -Path $path_assets -Force)
     Expand-Archive -Force $path_zip -DestinationPath $path_final
 
-    Show-Message "Download $name" "Download completed" "Blue" "Magenta"
+    Show-Message "Download $name" "Download completed" $style_info $style_status
 }
 
 function Install-UPX {
