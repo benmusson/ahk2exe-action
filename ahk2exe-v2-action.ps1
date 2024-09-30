@@ -38,14 +38,17 @@ function Invoke-DownloadArtifacts {
     Show-Message "Download $name" "Downloading..." $style_info $style_action
     Show-Message "Download $name" "Source: $url" $style_info $style_command
     Show-Message "Download $name" "Destination: $path_zip" $style_info $style_command
-    
     [void](New-Item -ItemType Directory -Path $path_downloads -Force)
     [void](New-Object System.Net.WebClient).DownloadFile($url, $path_zip)
+    Show-Message "Download $name" "Download completed" $style_info $style_status
 
+		Show-Message "Download $name" "Extracting..." $style_info $style_action
+    Show-Message "Download $name" "Source: $path_zip" $style_info $style_command
+    Show-Message "Download $name" "Destination: $path_final" $style_info $style_command
     [void](New-Item -ItemType Directory -Path $path_assets -Force)
     Expand-Archive -Force $path_zip -DestinationPath $path_final
-
-    Show-Message "Download $name" "Download completed" $style_info $style_status
+    Show-Message "Download $name" "Extraction completed" $style_info $style_status
+    
 }
 
 function Install-UPX {
