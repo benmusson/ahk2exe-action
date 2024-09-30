@@ -65,12 +65,12 @@ function Get-GitHubReleaseAssets {
         $fileName = $asset.name
         $downloadDestination = Join-Path $downloadFolder $fileName
 
-        Show-Message "Download-$fileName" "Downloading..." $StyleInfo $StyleAction
-        Show-Message "Download-$fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
-        Show-Message "Download-$fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
+        Show-Message "Asset-$fileName" "Downloading..." $StyleInfo $StyleAction
+        Show-Message "Asset-$fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
+        Show-Message "Asset-$fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
         [void](New-Item -ItemType Directory -Path $downloadFolder -Force)
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadDestination)
-        Show-Message "Download-$fileName" "Download completed" $StyleInfo $StyleStatus
+        Show-Message "Asset-$fileName" "Download completed" $StyleInfo $StyleStatus
     }
     Show-Message "Download-$displayPath" "Downloading assets completed" $StyleInfo $StyleStatus
     return $downloadFolder
@@ -107,7 +107,7 @@ function Install-AutoHotkey {
         return $exePath
     }
 
-    Invoke-UnzipAllInPlace -TaskName "Install Autohotkey" -FolderPath $downloadFolder
+    Invoke-UnzipAllInPlace -TaskName "Install-Autohotkey" -FolderPath $downloadFolder
 
     if (![System.IO.File]::Exists($exePath)) { Throw "Missing AutoHotkey Executable '$exeName'." }
     Show-Message "Install-Autohotkey" "Installation path: $exePath" $StyleInfo $StyleCommand
@@ -160,7 +160,7 @@ function Install-UPX {
     Show-Message "Install-UPX" "Copying UPX executable into Ahk2Exe directory..." $StyleInfo $StyleAction
     Show-Message "Install-UPX" "Source: $upxPath" $StyleInfo $StyleCommand
     Show-Message "Install-UPX" "Destination: $exePath" $StyleInfo $StyleCommand
-    Move-Item -Path $exe -Destination $exePath -Force
+    Move-Item -Path $exe.FullName -Destination $exePath -Force
 
     if ([System.IO.File]::Exists($exePath)) { throw "Failed to install UPX. File was not present in Ahk2Exe folder after installation step completed." }
     Show-Message "Install-UPX" "Installation path: $exePath" $StyleInfo $StyleCommand
