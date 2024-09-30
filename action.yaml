@@ -70,7 +70,6 @@ inputs:
       The path used to store build assets.
     default: '.\.ahk2exe-v2-action'
 
-
 runs:
   using: composite
   steps:
@@ -87,4 +86,4 @@ runs:
         Url_Ahk: "${{ inputs.url-ahk }}"
         Url_Ahk2Exe: "${{ inputs.url-ahk2exe }}"
         Url_UPX: "${{ inputs.url-upx }}"
-        Build_Assets_Folder: "${{ inputs.build-assets-dir }}"
+        Build_Assets_Folder: "${{ inputs.build-assets-folder }}"
