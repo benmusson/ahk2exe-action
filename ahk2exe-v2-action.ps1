@@ -100,6 +100,7 @@ function Get-GitHubReleaseAssets {
         Show-Message "Get-Assets $displayPath - $fileName" "Downloading..." $StyleInfo $StyleAction
         Show-Message "Get-Assets $displayPath - $fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
         Show-Message "Get-Assets $displayPath - $fileName" "Destination: $downloadFolder" $StyleInfo $StyleCommand
+        [void](New-Item -ItemType Directory -Path $downloadFolder -Force)
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadFolder)
         Show-Message "Get-Assets $displayPath - $fileName" "Download completed" $StyleInfo $StyleStatus
     }
