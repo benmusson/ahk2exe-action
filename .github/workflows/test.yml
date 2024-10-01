@@ -1,6 +1,17 @@
 name: Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore: ['main']
+    paths-ignore: [ '**/README.md' ]
+  pull_request:
+    paths-ignore: [ '**/README.md' ]
+
+# Cancel in progress workflows on pull_requests.
+# https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -9,34 +20,98 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: x64 Test
+      - name: Test Default Output
         uses: ./
         with:
-          in: test/scripts/test.ahk2
-          out: output/test_x64.exe
-          icon: test/icons/test.ico
+          in: .\testing\v2.0.ahk
+
+      - name: Test x64 Target
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64.exe
+          icon: .\testing\icons\test.ico
           compression: upx
           target: x64
 
-      - name: x86 Test
+      - name: Test x86 Target
         uses: ./
         with:
-          in: test/scripts/test.ahk2
-          out: output/test_x86.exe
-          icon: test/icons/test.ico
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x86.exe
+          icon: .\testing\icons\test.ico
           compression: upx
           target: x86
 
-      - name: No Compression Test
+      - name: Test No Compression
         uses: ./
         with:
-          in: test/scripts/test.ahk2
-          out: output/text_x64_uncompressed.exe
-          icon: test/icons/test.ico
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_uncompressed.exe
+          icon: .\testing\icons\test.ico
           compression: none
 
+      - name: Test No Icon
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_no_icon.exe
+          target: x64
 
-      - name: List output directories
-        shell: pwsh
+      - name: Test ResourceId
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x86_resourceid.exe
+          resourceid: '#5'
+          target: x86
+
+      - name: Test Specified Tags
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_tagged.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          ahk-tag: v2.0.17
+          ahk2exe-tag: Ahk2Exe1.1.36.02f1
+          upx-tag: v4.2.4
+
+      - name: Test v1.1 x64
+        uses: ./
+        with:
+          in: .\testing\v1.1.ahk
+          out: .\output\v1.1_x64.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          ahk-tag: v1.1.37.02
+
+      - name: Test v1.1 x64
+        uses: ./
+        with:
+          in: .\testing\v1.1.ahk
+          out: .\output\v1.1_x86.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x86
+          ahk-tag: v1.1.37.02
+
+      - name: Check for Failed Test
         run: |
-          ls output
+          if(
+            [System.IO.File]::Exists('.\testing\v2.0.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x86.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_uncompressed.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_no_icon.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x86_resourceid.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_tagged.exe') &&
+            [System.IO.File]::Exists('.\output\v1.1_x86.exe') &&
+            [System.IO.File]::Exists('.\output\v1.1_x64.exe')
+          ) {
+            Write-Output "$($PSStyle.Foreground.Green)All Tests Passed!$($PSStyle.Reset)" 
+          } else {
+            throw "Tests Failed" 
+          }

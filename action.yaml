@@ -8,8 +8,7 @@ branding:
 inputs:
   in:
     required: true
-    description: >
-      The path and name of the script to compile.
+    description: 'The path and name of the script to compile.'
 
   out:
     required: false
@@ -22,14 +21,12 @@ inputs:
     required: false
     description: >
       The icon file to be used. 
-      Default is the last icon saved in the GUI interface, 
-      or any SetMainIcon compiler directive in the script.
+      Default is any SetMainIcon compiler directive in the script.
 
   target:
     required: false
-    description: >
-      Target architecture. Valid options: x86, x64. Defaults to x64.
-    default: "x64"
+    description: 'Target architecture. Valid options: x86, x64. Defaults to x64.'
+    default: 'x64'
 
   resourceid:
     required: false
@@ -46,36 +43,60 @@ inputs:
       Specifies which compression method to use. Valid options: none, upx. Defaults to upx.
     default: 'upx'
 
-  url-ahk:
+  ahk-repo:
     required: false
-    description: >
-      AutoHotkey download URL.
-    default: 'https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.18/AutoHotkey_2.0.18.zip'
+    description: 'GitHub repository source for AutoHotkey.'
+    default: 'AutoHotkey/AutoHotkey'
 
-  url-ahk2exe:
+  ahk-tag:
     required: false
-    description: >
-      Ahk2Exe download URL.
-    default: 'https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.02a0/Ahk2Exe1.1.37.02a0.zip'
+    description: 'Tagged GitHub release for AutoHotkey.'
+    default: 'latest'
 
-  url-upx:
+  ahk2exe-repo:
     required: false
-    description: >
-      UPX download URL.
-    default: 'https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip'
+    description: 'GitHub repository source for Ahk2Exe.'
+    default: 'AutoHotkey/Ahk2Exe'
 
+  ahk2exe-tag:
+    required: false
+    description: 'Tagged GitHub release for Ahk2Exe.'
+    default: 'latest'
+
+  upx-repo:
+    required: false
+    description: 'GitHub repository source for UPX.'
+    default: 'UPX/UPX'
+
+  upx-tag:
+    required: false
+    description: 'Tagged GitHub release for UPX.'
+    default: 'latest'
+
+  build-assets-folder:
+    required: false
+    description: 'The path used to store build assets downloaded during the action.'
+    default: '.\.ahk2exe-v2-action'
 
 runs:
   using: composite
   steps:
     - name: Build
-      shell: powershell
-      run: |
-        ./ahk2exe-v2-action.ps1 \
-        -In "${{ inputs.in }}" \
-        -Out "${{ inputs.out }}" \
-        -Icon "${{ inputs.icon }}" \
-        -Target "${{ inputs.target }}" \
-        -Url_Ahk "${{ inputs.url-ahk }}" \
-        -Url_Ahk2Exe "${{ inputs.url-ahk2exe }}" \
-        -Url_UPX "${{ inputs.url-upx }}"
+      shell: pwsh
+      run: ./action.ps1
+      env:
+        In: "${{ inputs.in }}"
+        Out: "${{ inputs.out }}"
+        Icon: "${{ inputs.icon }}"
+        Target: "${{ inputs.target }}"
+        ResourceId: "${{ inputs.resourceid }}"
+        Compression: "${{ inputs.compression }}"
+
+        AutoHotkeyRepo: "${{ inputs.ahk-repo }}"
+        AutoHotkeyTag: "${{ inputs.ahk-tag }}"
+        Ahk2ExeRepo: "${{ inputs.ahk2exe-repo }}"
+        Ahk2ExeTag: "${{ inputs.ahk2exe-tag }}"
+        UPXRepo: "${{ inputs.upx-repo }}"
+        UPXTag: "${{ inputs.upx-tag }}"
+
+        BuildAssetsFolder: "${{ inputs.build-assets-folder }}"
