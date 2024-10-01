@@ -224,7 +224,7 @@ function Invoke-Ahk2Exe {
         [string]$Compression = 'upx',
         [string]$ResourceId
     )
-    $previousHeader = Set-MessageHeader "Ahk2Exe-Compile"
+    $previousHeader = Set-MessageHeader "Compile-Ahk2Exe"
 
     Show-Message "Compiling $In to $Out..." $StyleAction
 
@@ -252,7 +252,7 @@ function Invoke-Ahk2Exe {
     if ($process.ExitCode -ne 0) {
         Throw "Exception occurred during build."
     } else {
-        Show-Message "Build completed" $StyleStatus
+        Show-Message "Compilation completed" $StyleStatus
     }
 
     [void](Set-MessageHeader $previousHeader)

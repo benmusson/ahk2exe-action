@@ -83,7 +83,7 @@ runs:
   steps:
     - name: Build
       shell: pwsh
-      run: ${{ github.action_path }}/action.ps1
+      run: ${{ github.action_path }}\action.ps1
       env:
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"
