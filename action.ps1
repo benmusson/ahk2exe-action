@@ -37,16 +37,20 @@ function Get-GitHubReleaseAssets {
         [string]$FileTypeFilter
     )
 
+    
+
     $repositoryOwner, $repositoryName = ($Repository -split "/")[0, 1]
     if ([string]::IsNullOrEmpty($repositoryOwner)) { Throw "Invalid repository path, missing repository owner."}
     if ([string]::IsNullOrEmpty($repositoryName)) { Throw "Invalid repository path, missing repository name."}
 
     $displayPath = "$repositoryOwner/$repositoryName/$ReleaseTag"
+    $previousHeader = Set-MessageHeader "Download-$displayPath"
+
     $downloadFolderName = $displayPath.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
     $downloadFolder = Join-Path $PathDownloads $downloadFolderName
     if (Test-Path -Path $downloadFolder) { 
         if ((Get-ChildItem -Path "$downloadFolder" | Measure-Object).Count -gt 0) {
-            Show-Message "Download-$displayPath" "$displayPath is already present, skipping re-download..." $StyleInfo $StyleQuiet
+            Show-Message "$displayPath is already present, skipping re-download..." $StyleQuiet
             return $downloadFolder
         }
     }
@@ -57,31 +61,35 @@ function Get-GitHubReleaseAssets {
         $apiUrl = "https://api.github.com/repos/$repositoryOwner/$repositoryName/releases/tags/$ReleaseTag"
     }
 
-    Show-Message "Download-$displayPath" "Getting release information..." $StyleInfo $StyleAction
+    Show-Message "Getting release information..." $StyleAction
     $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ "User-Agent" = "PowerShell" }
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
 
-    Show-Message "Download-$displayPath" "Filtering assets for '$FileTypeFilter' files..." $StyleInfo $StyleAction
+    Show-Message "Filtering assets for '$FileTypeFilter' files..." $StyleAction
     $filteredAssets = $assets | Where-Object { $_.name -like "$FileTypeFilter" }
     if ($filteredAssets.Count -eq 0) { Throw "No assets matching the file type '$FileTypeFilter' found." }
-    Show-Message "Download-$displayPath" "Found files: $filteredAssets" $StyleInfo $StyleCommand
+    Show-Message "Found files: $filteredAssets" $StyleCommand
 
-    Show-Message "Download-$displayPath" "Downloading assets..." $StyleInfo $StyleAction
+    Show-Message "Downloading assets..." $StyleAction
     foreach ($asset in $filteredAssets) {
         $downloadUrl = $asset.browser_download_url
         $fileName = $asset.name
         $downloadDestination = Join-Path $downloadFolder $fileName
 
-        Show-Message "Asset-$fileName" "Downloading..." $StyleInfo $StyleAction
-        Show-Message "Asset-$fileName" "Source: $downloadUrl" $StyleInfo $StyleCommand
-        Show-Message "Asset-$fileName" "Destination: $downloadDestination" $StyleInfo $StyleCommand
+        $previousHeaderAsset = Set-MessageHeader "Asset-$fileName"
+        Show-Message "Downloading..." $StyleAction
+        Show-Message "Source: $downloadUrl" $StyleCommand
+        Show-Message "Destination: $downloadDestination" $StyleCommand
         [void](New-Item -ItemType Directory -Path $downloadFolder -Force)
         [void](New-Object System.Net.WebClient).DownloadFile($downloadUrl, $downloadDestination)
-        Show-Message "Asset-$fileName" "Download completed" $StyleInfo $StyleStatus
+        Show-Message "Download completed" $StyleStatus
+        [void](Set-MessageHeader $previousHeaderAsset)
     }
-    Show-Message "Download-$displayPath" "Downloading assets completed" $StyleInfo $StyleStatus
+    Show-Message "Downloading assets completed" $StyleStatus
+
+    [void](Set-MessageHeader $previousHeader)
     return $downloadFolder
 }
 
