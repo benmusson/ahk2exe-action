@@ -16,6 +16,7 @@ function Set-MessageHeader {
     param (
         [string]$header
     )
+
     $oldHeader, $global:MessageHeader = $MessageHeader, $header
     return $oldHeader
 }
@@ -26,6 +27,7 @@ function Show-Message {
         [string]$message_style = $PSStyle.Foreground.White,
         [string]$header_style = $StyleInfo
     )
+
     Write-Host "$header_style$global:MessageHeader::$($PSStyle.Reset) " -NoNewLine
     Write-Host "$message_style$message$($PSStyle.Reset)"
 }
@@ -36,8 +38,6 @@ function Get-GitHubReleaseAssets {
         [string]$ReleaseTag = 'latest',
         [string]$FileTypeFilter
     )
-
-    
 
     $repositoryOwner, $repositoryName = ($Repository -split "/")[0, 1]
     if ([string]::IsNullOrEmpty($repositoryOwner)) { Throw "Invalid repository path, missing repository owner."}
@@ -179,6 +179,7 @@ function Install-UPX {
     param (
         [string]$Ahk2ExePath
     )
+
     $previousHeader = Set-MessageHeader "Install-UPX"
 
     Show-Message "Installing..." $StyleAction
@@ -224,6 +225,7 @@ function Invoke-Ahk2Exe {
         [string]$Compression = 'upx',
         [string]$ResourceId
     )
+
     $previousHeader = Set-MessageHeader "Compile-Ahk2Exe"
 
     Show-Message "Compiling $In to $Out..." $StyleAction
@@ -260,7 +262,7 @@ function Invoke-Ahk2Exe {
 
 function Invoke-Action {
     Show-Message "Starting..." $StyleAction
-    
+
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
 
