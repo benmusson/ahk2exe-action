@@ -30,7 +30,7 @@ This action allows compiling [AutoHotkey] scripts with [Ahk2Exe].
 |`resourceid`| Assigns a non-standard resource ID to be used for the main script for compilations which use an .exe base file (see Embedded Scripts). Numeric resource IDs should consist of a hash sign (#) followed by a decimal number. | #1, or any ResourceID compiler directive in the script. |
 |`compression`| Specifies which compression method to use. Valid options: none, upx. | `upx` |
 |`ahk-repo`| GitHub repository source for AutoHotkey. | `AutoHotkey/AutoHotkey` |
-|`ahk-tag`| Tagged GitHub release for AutoHotkey. View releases for official repo [here](https://github.com/AutoHotkey/AutoHotkey/releases). | `v2.0.18` |
+|`ahk-tag`| Tagged GitHub release for AutoHotkey. View releases for official repo [here](https://github.com/AutoHotkey/AutoHotkey/releases). | `latest` |
 |`ahk2exe-repo`| GitHub repository source for Ahk2Exe. | `AutoHotkey/Ahk2Exe` |
 |`ahk2exe-tag`| Tagged GitHub release for Ahk2Exe. View releases for official repo [here](https://github.com/AutoHotkey/Ahk2Exe/releases). | `latest` |
 |`upx-repo`| GitHub repository source for UPX. | `UPX/UPX` |
@@ -52,7 +52,7 @@ jobs:
     - uses: actions/checkout@v4
 
       # Compiled file will be '.\path\to\script.exe'
-    - name: Build using Ahk2Exe 
+    - name: Build with latest AutoHotkey release
       uses: benmusson/ahk2exe-action@v1
       with:
         in: .\path\to\script.ahk
@@ -90,18 +90,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build With Icon
+    - name: Build (With Icon)
       uses: benmusson/ahk2exe-action@v1
       with:
         in: .\path\to\script.ahk
         out: .\build\MyCompiledScript.exe
         icon: .\images\favicon.ico
-        ahk-tag: v2.0.18
 ```
 
 #### Build for x86 and x64
 ```yaml
-name: Compile using Ahk2Exe and Use Icon
+name: Compile (x86/x64)
 
 on: push
 
@@ -129,10 +128,6 @@ jobs:
         target: x64
         ahk-tag: v2.0.18
 ```
-
-## Improvements Over Previous Efforts
-Several `ahk2exe` actions exist already `#TODO EXAMPLES`, each with their own shortcomings.
-This action e
 
 [action-ahk2exe]: https://github.com/benmusson/action-ahk2exe
 [AutoHotkey]: https://github.com/AutoHotkey/AutoHotkey

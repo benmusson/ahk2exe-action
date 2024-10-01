@@ -51,7 +51,7 @@ inputs:
   ahk-tag:
     required: false
     description: 'Tagged GitHub release for AutoHotkey.'
-    default: 'v2.0.18'
+    default: 'latest'
 
   ahk2exe-repo:
     required: false
@@ -83,7 +83,7 @@ runs:
   steps:
     - name: Build
       shell: pwsh
-      run: ./ahk2exe-v2-action.ps1
+      run: ./action.ps1
       env:
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"

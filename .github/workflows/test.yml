@@ -20,64 +20,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Test Default Output
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
+
       - name: Test x64 Target
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\test_x64.exe
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64.exe
           icon: .\testing\icons\test.ico
           compression: upx
           target: x64
+
       - name: Test x86 Target
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\test_x86.exe
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x86.exe
           icon: .\testing\icons\test.ico
           compression: upx
           target: x86
 
       - name: Test No Compression
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\text_x64_uncompressed.exe
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_uncompressed.exe
           icon: .\testing\icons\test.ico
           compression: none
 
       - name: Test No Icon
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\test_no_icon.exe
-          target: x64
-
-      - name: Test Default Output
-        uses: ./
-        continue-on-error: true
-        with:
-          in: .\testing\v2.0\test.ahk
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_no_icon.exe
           target: x64
 
       - name: Test ResourceId
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\test_resourceid.exe
-          target: x64
-          resourceid: 5
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x86_resourceid.exe
+          resourceid: '#5'
+          target: x86
 
       - name: Test Specified Tags
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v2.0\test.ahk
-          out: .\output\test_tags.exe
+          in: .\testing\v2.0.ahk
+          out: .\output\v2.0_x64_tagged.exe
           icon: .\testing\icons\test.ico
           compression: upx
           target: x64
@@ -85,28 +78,40 @@ jobs:
           ahk2exe-tag: Ahk2Exe1.1.36.02f1
           upx-tag: v4.2.4
 
-      - name: Test v1.1
+      - name: Test v1.1 x64
         uses: ./
-        continue-on-error: true
         with:
-          in: .\testing\v1.1\test.ahk
-          out: .\output\test_11.exe
+          in: .\testing\v1.1.ahk
+          out: .\output\v1.1_x64.exe
           icon: .\testing\icons\test.ico
           compression: upx
           target: x64
           ahk-tag: v1.1.37.02
 
+      - name: Test v1.1 x64
+        uses: ./
+        with:
+          in: .\testing\v1.1.ahk
+          out: .\output\v1.1_x86.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x86
+          ahk-tag: v1.1.37.02
+
       - name: Check for Failed Test
         run: |
           if(
-            ![System.IO.File]::Exists('.\output\test_x64.exe') ||
-            ![System.IO.File]::Exists('.\output\test_x86.exe') ||
-            ![System.IO.File]::Exists('.\output\text_x64_uncompressed.exe') ||
-            ![System.IO.File]::Exists('.\output\test_no_icon.exe') ||
-            ![System.IO.File]::Exists('.\output\test.exe') ||
-            ![System.IO.File]::Exists('.\output\test_resourceid.exe')
+            [System.IO.File]::Exists('.\testing\v2.0.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x86.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_uncompressed.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_no_icon.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x86_resourceid.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_tagged.exe') &&
+            [System.IO.File]::Exists('.\output\v1.1_x86.exe') &&
+            [System.IO.File]::Exists('.\output\v1.1_x64.exe')
           ) {
-            throw "Tests Failed"  
+            Write-Output "$($PSStyle.Foreground.Green)All Tests Passed!$($PSStyle.Reset)" 
           } else {
-            Write-Output "All Tests Passed!" 
+            throw "Tests Failed" 
           }
