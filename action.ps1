@@ -11,13 +11,12 @@ $StyleCommand = $PSStyle.Foreground.Yellow
 $StyleQuiet = $PSStyle.Foreground.BrightBlack
 
 
-$MessageHeader = "ahk2exe-action"
+$global:MessageHeader = "ahk2exe-action"
 function Set-MessageHeader {
     param (
         [string]$header
     )
-    $oldHeader = $MessageHeader
-    $MessageHeader = $header
+    $oldHeader, $global:MessageHeader = $MessageHeader, $header
     return $oldHeader
 }
 
@@ -27,7 +26,7 @@ function Show-Message {
         [string]$message_style = $PSStyle.Foreground.White,
         [string]$header_style = $StyleInfo
     )
-    Write-Host "$header_style$MessageHeader::$($PSStyle.Reset) " -NoNewLine
+    Write-Host "$header_style$global:MessageHeader::$($PSStyle.Reset) " -NoNewLine
     Write-Host "$message_style$message$($PSStyle.Reset)"
 }
 
