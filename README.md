@@ -1,7 +1,7 @@
-# action-ahk2exe-v2
-GitHub Action for building [AutoHotkey] scripts with [Ahk2Exe].
+# Ahk2Exe Action
+This action allows compiling [AutoHotkey] scripts with [Ahk2Exe].
 
-![Tests](https://img.shields.io/github/actions/workflow/status/benmusson/ahk2exe-action/test.yml?label=tests)
+![Build and Test](https://img.shields.io/github/actions/workflow/status/benmusson/ahk2exe-action/test.yml?label=tests)
 
 | **Feature** | **Description** |
 | - | - |
@@ -37,54 +37,98 @@ GitHub Action for building [AutoHotkey] scripts with [Ahk2Exe].
 |`upx-tag`| Tagged GitHub release for UPX. View releases for official repo [here](https://github.com/UPX/UPX/releases).| `latest` |
 |`build-assets-folder`| The path used to store build assets downloaded during the action. | `.\.ahk2exe-v2-action` |
 
-### Examples
+### Example Workflows
 
 #### Basic Usage
 ```yaml
-# Compiled file will be '.\path\to\script.exe'
-- uses: benmusson/ahk2exe-action@v1
-  with:
-    in: .\path\to\script.ahk
+name: Compile
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+      # Compiled file will be '.\path\to\script.exe'
+    - name: Build using Ahk2Exe 
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
 ```
 
 #### Specify AutoHotkey Version
 ```yaml
-# Uses AutoHotkey v1.1
-- uses: benmusson/ahk2exe-action@v1
-  with:
-    in: .\path\to\script.ahk
-    ahk-tag: v1.1.37.02
+name: Compile
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build with AutoHotkey v1.1.37.02
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
+        ahk-tag: v1.1.37.02
 ```
+
 
 #### Specify Output, Use Icon
 ```yaml
-# Applies an icon
-- uses: benmusson/ahk2exe-action@v1
-  with:
-    in: .\path\to\script.ahk
-    out: .\build\MyCompiledScript.exe
-    icon: .\images\favicon.ico
+name: Compile
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build With Icon
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
+        out: .\build\MyCompiledScript.exe
+        icon: .\images\favicon.ico
+        ahk-tag: v2.0.18
 ```
 
 #### Build for x86 and x64
 ```yaml
-# Build x86 version (will download assets)
-- uses: benmusson/ahk2exe-action@v1
-  with:
-    in: .\path\to\script.ahk
-    out: .\build\MyCompileScript_x86.exe
-    icon: .\images\favicon.ico
-    target: x86
+name: Compile using Ahk2Exe and Use Icon
 
-# Build x64 version (will used cached assets from first run)
-- uses: benmusson/ahk2exe-action@v1
-  with:
-    in: .\path\to\script.ahk
-    out: .\build\MyCompileScript_x64.exe
-    icon: .\images\favicon.ico
-    target: x64
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build (x86)
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
+        out: .\build\MyCompiledScript_x86.exe
+        icon: .\images\favicon.ico
+        target: x86
+        ahk-tag: v2.0.18
+
+    - name: Build (x64)
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
+        out: .\build\MyCompiledScript_x64.exe
+        icon: .\images\favicon.ico
+        target: x64
+        ahk-tag: v2.0.18
 ```
-
 
 ## Improvements Over Previous Efforts
 Several `ahk2exe` actions exist already `#TODO EXAMPLES`, each with their own shortcomings.
