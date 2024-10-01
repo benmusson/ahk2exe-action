@@ -1,7 +1,7 @@
 # Ahk2Exe Action
 This action allows compiling [AutoHotkey] scripts with [Ahk2Exe].
 
-![Build and Test](https://img.shields.io/github/actions/workflow/status/benmusson/ahk2exe-action/test.yml?label=tests)
+[![Build and Test](https://github.com/benmusson/ahk2exe-action/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/benmusson/ahk2exe-action/actions/workflows/test.yml>)
 
 | **Feature** | **Description** |
 | - | - |
