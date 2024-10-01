@@ -1,5 +1,5 @@
-name: 'ahk2exe-action'
-description: 'Compile AutoHotkey v2 scripts using Ahk2Exe.'
+name: 'Compile AutoHotkey'
+description: 'Compile AutoHotkey scripts using Ahk2Exe.'
 author: 'benmusson'
 branding:
   color: 'blue'
