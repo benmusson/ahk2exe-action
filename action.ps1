@@ -271,5 +271,5 @@ function Invoke-Action {
     Invoke-Ahk2Exe -Path "$ahk2exePath" -Base "$ahkPath" -In "$env:In" -Out "$env:Out" -Icon "$env:Icon" -Compression "$env:Compression" -ResourceId "$env:ResourceId"
     Show-Message "Finished" $StyleStatus
 }
-	
+
 Invoke-Action
