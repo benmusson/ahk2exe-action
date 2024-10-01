@@ -51,6 +51,8 @@ function Get-GitHubReleaseAssets {
     if (Test-Path -Path $downloadFolder) { 
         if ((Get-ChildItem -Path "$downloadFolder" | Measure-Object).Count -gt 0) {
             Show-Message "$displayPath is already present, skipping re-download..." $StyleQuiet
+
+            [void](Set-MessageHeader $previousHeader)
             return $downloadFolder
         }
     }
@@ -128,6 +130,8 @@ function Install-AutoHotkey {
     $installPath = (Get-ChildItem -Path $downloadFolder -Recurse | Where-Object { $_.Name -match "^$searchFilter$" } | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Autohotkey is already installed, skipping re-installation..." $StyleQuiet
+
+        [void](Set-MessageHeader $previousHeader)
         return $installPath
     }
 
@@ -154,6 +158,8 @@ function Install-Ahk2Exe {
     $installPath = (Get-ChildItem -Path $downloadFolder -Recurse -Filter $exeName | Select-Object -First 1)
     if ([System.IO.File]::Exists($installPath)) { 
         Show-Message "Ahk2Exe is already installed, skipping re-installation..." $StyleQuiet
+
+        [void](Set-MessageHeader $previousHeader)
         return $installPath
     }
 
@@ -184,6 +190,8 @@ function Install-UPX {
     $installPath = Join-Path $ahk2exeFolder $exeName
     if ([System.IO.File]::Exists($installPath)) {
         Show-Message "UPX is already installed, skipping re-installation..." $StyleQuiet
+
+        [void](Set-MessageHeader $previousHeader)
         return
     }
 
@@ -251,7 +259,7 @@ function Invoke-Ahk2Exe {
 }
 
 function Invoke-Action {
-    Show-Message "Starting..." "" $StyleAction
+    Show-Message "Starting..." $StyleAction
     
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
