@@ -8,8 +8,7 @@ branding:
 inputs:
   in:
     required: true
-    description: >
-      The path and name of the script to compile.
+    description: 'The path and name of the script to compile.'
 
   out:
     required: false
@@ -22,14 +21,12 @@ inputs:
     required: false
     description: >
       The icon file to be used. 
-      Default is the last icon saved in the GUI interface, 
-      or any SetMainIcon compiler directive in the script.
+      Default is any SetMainIcon compiler directive in the script.
 
   target:
     required: false
-    description: >
-      Target architecture. Valid options: x86, x64. Defaults to x64.
-    default: "x64"
+    description: 'Target architecture. Valid options: x86, x64. Defaults to x64.'
+    default: 'x64'
 
   resourceid:
     required: false
@@ -48,44 +45,37 @@ inputs:
 
   ahk-repo:
     required: false
-    description: >
-      GitHub repository source for AutoHotkey.
+    description: 'GitHub repository source for AutoHotkey.'
     default: 'AutoHotkey/AutoHotkey'
 
   ahk-tag:
     required: false
-    description: >
-      Tagged GitHub release source for AutoHotkey.
+    description: 'Tagged GitHub release for AutoHotkey.'
     default: 'v2.0.18'
 
   ahk2exe-repo:
     required: false
-    description: >
-      GitHub repository source for Ahk2Exe.
+    description: 'GitHub repository source for Ahk2Exe.'
     default: 'AutoHotkey/Ahk2Exe'
 
   ahk2exe-tag:
     required: false
-    description: >
-      Tagged GitHub release source for Ahk2Exe.
+    description: 'Tagged GitHub release for Ahk2Exe.'
     default: 'latest'
 
   upx-repo:
     required: false
-    description: >
-      GitHub repository source for UPX.
+    description: 'GitHub repository source for UPX.'
     default: 'UPX/UPX'
 
   upx-tag:
     required: false
-    description: >
-      Tagged GitHub release source for UPX.
+    description: 'Tagged GitHub release for UPX.'
     default: 'latest'
 
   build-assets-folder:
     required: false
-    description: >
-      The path used to store build assets.
+    description: 'The path used to store build assets downloaded during the action.'
     default: '.\.ahk2exe-v2-action'
 
 runs:
