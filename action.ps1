@@ -224,9 +224,9 @@ function Invoke-Ahk2Exe {
         [string]$Compression = 'upx',
         [string]$ResourceId
     )
-    $previousHeader = Set-MessageHeader "Build-($Out)"
+    $previousHeader = Set-MessageHeader "Ahk2Exe-Compile"
 
-    Show-Message "Converting $In to $Out..." $StyleAction
+    Show-Message "Compiling $In to $Out..." $StyleAction
 
     $ahk2exe_args = "/silent verbose /in `"$In`""
     $ahk2exe_args += " /base `"$Base`""
