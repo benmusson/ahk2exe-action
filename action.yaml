@@ -1,4 +1,4 @@
-name: 'Ahk2Exe'
+name: 'ahk2exe-action'
 description: 'Compile AutoHotkey v2 scripts using Ahk2Exe.'
 author: 'benmusson'
 branding:
