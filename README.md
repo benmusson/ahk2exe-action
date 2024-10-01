@@ -19,6 +19,29 @@ This action allows compiling [AutoHotkey] scripts with [Ahk2Exe].
 > [!IMPORTANT]  
 > This action only works on `windows` GitHub actions runners.
 
+### Complete Example
+```yaml
+name: Compile
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build with latest AutoHotkey release
+      uses: benmusson/ahk2exe-action@v1
+      with:
+        in: .\path\to\script.ahk
+        out: .\build\MyCompiledScript.exe
+        icon: .\images\favicon.ico
+        target: x64
+        compression: upx
+        ahk-tag: latest
+```
+
 ### Inputs
 
 | Name | Description | Default | Required |
@@ -129,6 +152,13 @@ jobs:
         ahk-tag: v2.0.18
 ```
 
+## Contributing
+Have an issue or see room for improvement? Issues and pull requests are welcome!
+
+## License
+The scripts and documentation in this project are released under the [GPLv3 License](https://github.com/benmusson/ahk2exe-action/blob/main/LICENSE).
+
 [action-ahk2exe]: https://github.com/benmusson/action-ahk2exe
 [AutoHotkey]: https://github.com/AutoHotkey/AutoHotkey
 [Ahk2Exe]: https://github.com/AutoHotkey/Ahk2Exe
+[GPLv3 License]: (https://github.com/benmusson/ahk2exe-action/blob/main/LICENSE)
