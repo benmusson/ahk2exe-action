@@ -6,6 +6,11 @@ branding:
   icon: 'command'
 
 inputs:
+  GITHUB_TOKEN:
+    required: true
+    description: 'GitHub Actions token'
+    default: ${{ secrets.GITHUB_TOKEN }}
+
   in:
     required: true
     description: 'The path and name of the script to compile.'
@@ -85,7 +90,7 @@ runs:
       shell: pwsh
       run: ${{ github.action_path }}\action.ps1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"
         Icon: "${{ inputs.icon }}"
