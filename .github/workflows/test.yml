@@ -22,8 +22,8 @@ jobs:
       - name: Test Default Output
         uses: ./
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           in: .\testing\v2.0.ahk
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test x64 Target
         uses: ./
