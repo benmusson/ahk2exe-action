@@ -40,7 +40,7 @@ jobs:
         target: x64
         compression: upx
         ahk-tag: latest
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Inputs
