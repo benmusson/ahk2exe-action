@@ -66,7 +66,7 @@ function Get-GitHubReleaseAssets {
 
     Show-Message "Getting release information..." $StyleAction
     $headers = @{ "User-Agent" = "PowerShell-ahk2exe-action" }
-    if (![string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { $headers["Authorization"] = "token $env:GITHUB_TOKEN" }
+    if (![string]::IsNullOrEmpty($env:GitHubToken)) { $headers["Authorization"] = "token $env:GitHubToken" }
     
     $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
 
@@ -267,8 +267,8 @@ function Invoke-Ahk2Exe {
 function Invoke-Action {
     Show-Message "Starting..." $StyleAction
 
-    if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { 
-        Show-Message "GITHUB_TOKEN environment variable is not set. API calls may be rate limited." $StyleAlert 
+    if ([string]::IsNullOrEmpty($env:GitHubToken)) { 
+        Show-Message "GitHubToken environment variable is not set. API calls may be rate limited." $StyleAlert 
     }
 
     $ahkPath = Install-AutoHotkey
