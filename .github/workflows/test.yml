@@ -23,6 +23,12 @@ jobs:
         uses: ./
         with:
           in: .\testing\v2.0.ahk
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test without GitHub Token
+        uses: ./
+        with:
+          in: .\testing\v2.0.ahk
 
       - name: Test x64 Target
         uses: ./
@@ -32,6 +38,7 @@ jobs:
           icon: .\testing\icons\test.ico
           compression: upx
           target: x64
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test x86 Target
         uses: ./
@@ -41,6 +48,7 @@ jobs:
           icon: .\testing\icons\test.ico
           compression: upx
           target: x86
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test No Compression
         uses: ./
@@ -49,6 +57,7 @@ jobs:
           out: .\output\v2.0_x64_uncompressed.exe
           icon: .\testing\icons\test.ico
           compression: none
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test No Icon
         uses: ./
@@ -56,6 +65,7 @@ jobs:
           in: .\testing\v2.0.ahk
           out: .\output\v2.0_x64_no_icon.exe
           target: x64
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test ResourceId
         uses: ./
@@ -64,6 +74,7 @@ jobs:
           out: .\output\v2.0_x86_resourceid.exe
           resourceid: '#5'
           target: x86
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test Specified Tags
         uses: ./
@@ -76,6 +87,7 @@ jobs:
           ahk-tag: v2.0.17
           ahk2exe-tag: Ahk2Exe1.1.36.02f1
           upx-tag: v4.2.4
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test v1.1 x64
         uses: ./
@@ -86,6 +98,7 @@ jobs:
           compression: upx
           target: x64
           ahk-tag: v1.1.37.02
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test v1.1 x64
         uses: ./
@@ -96,6 +109,7 @@ jobs:
           compression: upx
           target: x86
           ahk-tag: v1.1.37.02
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for Failed Test
         run: |

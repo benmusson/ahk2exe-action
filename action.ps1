@@ -9,6 +9,7 @@ $StyleAction = $PSStyle.Foreground.Green
 $StyleStatus = $PSStyle.Foreground.Magenta
 $StyleCommand = $PSStyle.Foreground.Yellow
 $StyleQuiet = $PSStyle.Foreground.BrightBlack
+$StyleAlert = $PSStyle.Foreground.Red
 
 
 $global:MessageHeader = "ahk2exe-action"
@@ -64,7 +65,10 @@ function Get-GitHubReleaseAssets {
     }
 
     Show-Message "Getting release information..." $StyleAction
-    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ "User-Agent" = "PowerShell" }
+    $headers = @{ "User-Agent" = "PowerShell-ahk2exe-action" }
+    if (![string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { $headers["Authorization"] = "token $env:GITHUB_TOKEN" }
+    
+    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
@@ -238,7 +242,7 @@ function Invoke-Ahk2Exe {
         'upx'  { $ahk2exe_args += " /compress 2" } 
         Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
     }
-    
+
     if (![string]::IsNullOrEmpty($Out)) { 
         [void](New-Item -Path $Out -ItemType File -Force)
         $ahk2exe_args += " /out `"$Out`"" 
@@ -262,6 +266,10 @@ function Invoke-Ahk2Exe {
 
 function Invoke-Action {
     Show-Message "Starting..." $StyleAction
+
+    if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { 
+        Show-Message "GITHUB_TOKEN environment variable is not set. API calls may be rate limited." $StyleAlert 
+    }
 
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe
