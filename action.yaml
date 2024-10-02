@@ -85,6 +85,7 @@ runs:
       shell: pwsh
       run: ${{ github.action_path }}\action.ps1
       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"
         Icon: "${{ inputs.icon }}"

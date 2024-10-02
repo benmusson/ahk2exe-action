@@ -64,7 +64,10 @@ function Get-GitHubReleaseAssets {
     }
 
     Show-Message "Getting release information..." $StyleAction
-    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ "User-Agent" = "PowerShell" }
+    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ 
+        "User-Agent" = "PowerShell"
+        "Authorization" = "Bearer $env:GITHUB_TOKEN"
+     }
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
@@ -238,7 +241,7 @@ function Invoke-Ahk2Exe {
         'upx'  { $ahk2exe_args += " /compress 2" } 
         Default { Throw "Unsupported Compression Type: '$compression'. Valid Options: none, upx"}
     }
-    
+
     if (![string]::IsNullOrEmpty($Out)) { 
         [void](New-Item -Path $Out -ItemType File -Force)
         $ahk2exe_args += " /out `"$Out`"" 
