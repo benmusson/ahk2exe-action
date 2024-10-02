@@ -42,6 +42,7 @@ function Get-GitHubReleaseAssets {
     $repositoryOwner, $repositoryName = ($Repository -split "/")[0, 1]
     if ([string]::IsNullOrEmpty($repositoryOwner)) { Throw "Invalid repository path, missing repository owner."}
     if ([string]::IsNullOrEmpty($repositoryName)) { Throw "Invalid repository path, missing repository name."}
+    if (-not $env:GITHUB_TOKEN) { Throw "GITHUB_TOKEN environment variable is not set." }
 
     $displayPath = "$repositoryOwner/$repositoryName/$ReleaseTag"
     $previousHeader = Set-MessageHeader "Download-$displayPath"
@@ -65,8 +66,8 @@ function Get-GitHubReleaseAssets {
 
     Show-Message "Getting release information..." $StyleAction
     $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ 
-        "User-Agent" = "PowerShell"
-        "Authorization" = "Bearer $env:GITHUB_TOKEN"
+        "User-Agent" = "PowerShell-ahk2exe-action"
+        "Authorization" = "token $env:GITHUB_TOKEN"
      }
 
     $assets = $release.assets

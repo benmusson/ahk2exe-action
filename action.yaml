@@ -78,9 +78,6 @@ inputs:
     description: 'The path used to store build assets downloaded during the action.'
     default: '.\.ahk2exe-v2-action'
 
-env:
-  GITHUB_TOKEN: "As provided by Github Actions"
-
 runs:
   using: composite
   steps:
