@@ -40,6 +40,7 @@ jobs:
         target: x64
         compression: upx
         ahk-tag: latest
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Inputs
@@ -59,6 +60,7 @@ jobs:
 |`upx-repo`| GitHub repository source for UPX. | `UPX/UPX` |
 |`upx-tag`| Tagged GitHub release for UPX. View releases for official repo [here](https://github.com/UPX/UPX/releases).| `latest` |
 |`build-assets-folder`| The path used to store build assets downloaded during the action. | `.\.ahk2exe-v2-action` |
+|`GITHUB_TOKEN`| Token to use for GitHub API calls. If not provided, the API calls will be made without authentication and may be rate limited. See more information [here](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api).|
 
 ### Example Workflows
 
@@ -79,6 +81,7 @@ jobs:
       uses: benmusson/ahk2exe-action@v1
       with:
         in: .\path\to\script.ahk
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### Specify AutoHotkey Version
@@ -98,6 +101,7 @@ jobs:
       with:
         in: .\path\to\script.ahk
         ahk-tag: v1.1.37.02
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 
@@ -119,6 +123,7 @@ jobs:
         in: .\path\to\script.ahk
         out: .\build\MyCompiledScript.exe
         icon: .\images\favicon.ico
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### Build for x86 and x64
@@ -141,6 +146,7 @@ jobs:
         icon: .\images\favicon.ico
         target: x86
         ahk-tag: v2.0.18
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build (x64)
       uses: benmusson/ahk2exe-action@v1
@@ -150,6 +156,7 @@ jobs:
         icon: .\images\favicon.ico
         target: x64
         ahk-tag: v2.0.18
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Contributing
