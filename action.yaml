@@ -6,11 +6,6 @@ branding:
   icon: 'command'
 
 inputs:
-  GITHUB_TOKEN:
-    required: true
-    description: 'GitHub Actions token'
-    default: ${{ secrets.GITHUB_TOKEN }}
-
   in:
     required: true
     description: 'The path and name of the script to compile.'
@@ -83,6 +78,9 @@ inputs:
     description: 'The path used to store build assets downloaded during the action.'
     default: '.\.ahk2exe-v2-action'
 
+env:
+  GITHUB_TOKEN: "As provided by Github Actions"
+
 runs:
   using: composite
   steps:
@@ -90,7 +88,7 @@ runs:
       shell: pwsh
       run: ${{ github.action_path }}\action.ps1
       env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"
         Icon: "${{ inputs.icon }}"
