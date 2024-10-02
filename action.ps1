@@ -9,6 +9,7 @@ $StyleAction = $PSStyle.Foreground.Green
 $StyleStatus = $PSStyle.Foreground.Magenta
 $StyleCommand = $PSStyle.Foreground.Yellow
 $StyleQuiet = $PSStyle.Foreground.BrightBlack
+$StyleAlert = $PSStyle.Foreground.Red
 
 
 $global:MessageHeader = "ahk2exe-action"
@@ -42,7 +43,6 @@ function Get-GitHubReleaseAssets {
     $repositoryOwner, $repositoryName = ($Repository -split "/")[0, 1]
     if ([string]::IsNullOrEmpty($repositoryOwner)) { Throw "Invalid repository path, missing repository owner."}
     if ([string]::IsNullOrEmpty($repositoryName)) { Throw "Invalid repository path, missing repository name."}
-    if (-not $env:GITHUB_TOKEN) { Throw "GITHUB_TOKEN environment variable is not set." }
 
     $displayPath = "$repositoryOwner/$repositoryName/$ReleaseTag"
     $previousHeader = Set-MessageHeader "Download-$displayPath"
@@ -65,10 +65,10 @@ function Get-GitHubReleaseAssets {
     }
 
     Show-Message "Getting release information..." $StyleAction
-    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers @{ 
-        "User-Agent" = "PowerShell-ahk2exe-action"
-        "Authorization" = "token $env:GITHUB_TOKEN"
-     }
+    $headers = @{ "User-Agent" = "PowerShell-ahk2exe-action" }
+    if (![string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { $headers["Authorization"] = "token $env:GITHUB_TOKEN" }
+    
+    $release = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
 
     $assets = $release.assets
     if ($assets.Count -eq 0) { Throw "No assets found for release '$displayPath'" }
@@ -266,6 +266,10 @@ function Invoke-Ahk2Exe {
 
 function Invoke-Action {
     Show-Message "Starting..." $StyleAction
+
+    if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) { 
+        Show-Message "GITHUB_TOKEN environment variable is not set. API calls may be rate limited." $StyleAlert 
+    }
 
     $ahkPath = Install-AutoHotkey
     $ahk2exePath = Install-Ahk2Exe

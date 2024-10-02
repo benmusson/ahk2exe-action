@@ -77,6 +77,9 @@ inputs:
     required: false
     description: 'The path used to store build assets downloaded during the action.'
     default: '.\.ahk2exe-v2-action'
+  GITHUB_TOKEN:
+    description: Set to use token for GitHub authentication (avoids rate limiting).
+    required: false
 
 runs:
   using: composite
@@ -85,7 +88,7 @@ runs:
       shell: pwsh
       run: ${{ github.action_path }}\action.ps1
       env:
-        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         In: "${{ inputs.in }}"
         Out: "${{ inputs.out }}"
         Icon: "${{ inputs.icon }}"
