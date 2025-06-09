@@ -100,7 +100,7 @@ jobs:
           ahk-tag: v1.1.37.02
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test v1.1 x64
+      - name: Test v1.1 x86
         uses: ./
         with:
           in: .\testing\v1.1.ahk
@@ -110,6 +110,28 @@ jobs:
           target: x86
           ahk-tag: v1.1.37.02
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test v2.0 w/ BinMod
+        uses: ./
+        with:
+          in: .\testing\v2.0_binmod.ahk
+          out: .\output\v2.0_binmod_x64.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test v1.1 w/ BinMod
+        uses: ./
+        with:
+          in: .\testing\v1.1_binmod.ahk
+          out: .\output\v1.1_binmod_x64.exe
+          icon: .\testing\icons\test.ico
+          compression: upx
+          target: x64
+          ahk-tag: v1.1.37.02
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Check for Failed Test
         run: |
@@ -122,7 +144,9 @@ jobs:
             [System.IO.File]::Exists('.\output\v2.0_x86_resourceid.exe') &&
             [System.IO.File]::Exists('.\output\v2.0_x64_tagged.exe') &&
             [System.IO.File]::Exists('.\output\v1.1_x86.exe') &&
-            [System.IO.File]::Exists('.\output\v1.1_x64.exe')
+            [System.IO.File]::Exists('.\output\v1.1_x64.exe') &&
+            [System.IO.File]::Exists('.\output\v2.0_x64_binmod.exe') &&
+            [System.IO.File]::Exists('.\output\v1.1_x64_binmod.exe')
           ) {
             Write-Output "$($PSStyle.Foreground.Green)All Tests Passed!$($PSStyle.Reset)" 
           } else {
